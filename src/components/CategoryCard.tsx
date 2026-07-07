@@ -15,21 +15,27 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link href={`/categories/${category.slug}`}>
-      <Card className="glass-hover group cursor-pointer h-full">
+      <Card className="glass-hover group cursor-pointer h-full overflow-hidden relative">
+        <div className={`h-1.5 w-full bg-gradient-to-r ${category.accent}`} />
+
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
-            <span className="text-3xl">{category.icon}</span>
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.accent} flex items-center justify-center text-xl shadow-lg`}>
+              {category.icon}
+            </div>
             <Badge variant="glass" className="text-xs">
               {activeTools.length} active
             </Badge>
           </div>
-          <h3 className="text-lg font-semibold text-white mb-1.5">
+
+          <h3 className="text-lg font-semibold text-white mb-1">
             {category.name}
           </h3>
           <p className="text-sm text-white/50 leading-relaxed mb-4">
             {category.description}
           </p>
-          <div className="flex flex-wrap gap-1.5">
+
+          <div className="flex flex-wrap gap-1.5 mb-4">
             {activeTools.map((tool) => (
               <Badge key={tool.slug} variant="success" className="text-[10px]">
                 {tool.name}
@@ -40,6 +46,11 @@ export function CategoryCard({ category }: CategoryCardProps) {
                 +{comingSoon.length} more
               </Badge>
             )}
+          </div>
+
+          <div className="flex items-center gap-4 text-xs text-white/30 pt-2 border-t border-white/5">
+            <span>{tools.length} tools</span>
+            <span>{activeTools.length} available now</span>
           </div>
         </CardContent>
       </Card>

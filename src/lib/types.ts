@@ -3,6 +3,7 @@ export interface Category {
   name: string
   description: string
   icon: string
+  accent: string
 }
 
 export interface ApiTool {
@@ -21,6 +22,12 @@ export interface WeatherData {
   feelsLike: number
   humidity: number
   windSpeed: number
+  windDirection: number
+  windGusts: number
+  pressure: number
+  precipitation: number
+  cloudCover: number
+  uvIndex: number
   condition: string
   icon: string
   forecast: ForecastDay[]
@@ -32,4 +39,29 @@ export interface ForecastDay {
   tempMin: number
   condition: string
   icon: string
+  sunrise: string
+  sunset: string
+  precipitationSum: number
+  precipitationProbability: number
+}
+
+export interface IpInfoData {
+  ip: string
+  status: "success" | "fail"
+  country: string
+  countryCode: string
+  region: string
+  regionName: string
+  city: string
+  zip: string
+  lat: number
+  lon: number
+  timezone: string
+  isp: string
+  org: string
+  as: string
+  reverse: string
+  mobile: boolean
+  proxy: boolean
+  hosting: boolean
 }

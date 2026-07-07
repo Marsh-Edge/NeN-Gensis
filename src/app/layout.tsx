@@ -1,18 +1,7 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/Sidebar"
 import { TopBar } from "@/components/TopBar"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
 
 export const metadata: Metadata = {
   title: "NeN-Gensis — Free API Hub",
@@ -25,11 +14,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
-    >
-      <body className="min-h-full">
+    <html lang="en" className="dark h-full antialiased">
+      <body className="min-h-full font-sans">
         <Sidebar />
         <TopBar />
         <main className="lg:pl-64 pt-14 lg:pt-0 min-h-screen">

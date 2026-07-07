@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { categories } from "@/lib/constants"
+import { categories, categoryDotColors } from "@/lib/constants"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 
@@ -26,8 +26,7 @@ export function Sidebar() {
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
           {categories.map((cat) => {
-            const isActive = pathname === `/categories/${cat.slug}` || 
-              (pathname === "/" && cat.slug === "general")
+            const isActive = pathname === `/categories/${cat.slug}`
             return (
               <Link
                 key={cat.slug}
@@ -39,6 +38,10 @@ export function Sidebar() {
                     : "text-white/60 hover:text-white hover:bg-white/5"
                 )}
               >
+                <span className={cn(
+                  "w-2 h-2 rounded-full shrink-0",
+                  categoryDotColors[cat.slug]
+                )} />
                 <span className="text-lg">{cat.icon}</span>
                 <span>{cat.name}</span>
               </Link>

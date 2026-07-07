@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { categories } from "@/lib/constants"
+import { categories, categoryDotColors } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -55,6 +55,10 @@ export function MobileSidebar() {
                       : "text-white/60 hover:text-white hover:bg-white/5"
                   )}
                 >
+                  <span className={cn(
+                    "w-2 h-2 rounded-full shrink-0",
+                    categoryDotColors[cat.slug]
+                  )} />
                   <span className="text-lg">{cat.icon}</span>
                   <span>{cat.name}</span>
                 </Link>

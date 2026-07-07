@@ -56,7 +56,6 @@ body {
   background: linear-gradient(135deg, #0f0c29 0%, #1a1040 25%, #24243e 50%, #1a1040 75%, #0f0c29 100%);
   background-attachment: fixed;
   color: hsl(var(--foreground));
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .glass {
