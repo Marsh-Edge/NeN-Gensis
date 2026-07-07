@@ -4,7 +4,7 @@ export const categories: Category[] = [
   {
     slug: "general",
     name: "General",
-    description: "Everyday utilities — weather, time, and geolocation tools",
+    description: "Everyday utilities — weather, QR codes, dictionary, passwords, and more",
     icon: "🌐",
     accent: "from-sky-400 to-blue-600",
   },
@@ -43,6 +43,30 @@ export const apiTools: ApiTool[] = [
     slug: "weather",
     name: "Weather",
     description: "Get current weather and 3-day forecast for any city",
+    categorySlug: "general",
+    isInteractive: true,
+    status: "active",
+  },
+  {
+    slug: "dictionary",
+    name: "Dictionary",
+    description: "Look up word definitions, phonetics, pronunciations, and examples",
+    categorySlug: "general",
+    isInteractive: true,
+    status: "active",
+  },
+  {
+    slug: "qr-code",
+    name: "QR Code Generator",
+    description: "Generate QR codes from any text or URL — download or share",
+    categorySlug: "general",
+    isInteractive: true,
+    status: "active",
+  },
+  {
+    slug: "password-generator",
+    name: "Password Generator",
+    description: "Create strong, secure passwords with customizable options",
     categorySlug: "general",
     isInteractive: true,
     status: "active",
@@ -103,6 +127,19 @@ export const categoryDotColors: Record<string, string> = {
   data: "bg-emerald-400",
   development: "bg-violet-400",
   media: "bg-pink-400",
+}
+
+export const categoryToolIcons: Record<string, string> = {
+  weather: "🌤",
+  dictionary: "📖",
+  "qr-code": "📱",
+  "password-generator": "🔑",
+  "ip-info": "🔒",
+  "dns-lookup": "🌐",
+  countries: "🌍",
+  universities: "🏛",
+  "github-users": "🐙",
+  "placeholder-images": "🖼",
 }
 
 export function getToolsByCategory(slug: string): ApiTool[] {
