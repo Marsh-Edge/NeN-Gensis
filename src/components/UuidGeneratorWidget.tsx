@@ -31,7 +31,7 @@ export function UuidGeneratorWidget() {
     } catch { /* ignore */ }
   }
 
-  const uuids = useMemo(() => Array.from({ length: count }, () => generateUuid()), [count, genKey])
+  const uuids = useMemo(() => Array.from({ length: count }, () => generateUuid()), [count, genKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="space-y-6">

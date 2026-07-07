@@ -2,7 +2,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ToolIcon } from "@/lib/icons"
 import { SpaceWidget } from "@/components/SpaceWidget"
+import { ApiGuide } from "@/components/ApiGuide"
 
 export default function SpacePage() {
   return (
@@ -14,17 +16,32 @@ export default function SpacePage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <span className="text-2xl">🚀</span>
+          <ToolIcon slug="space" className="w-7 h-7 text-foreground" />
         </div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">People in Space</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">People in Space</h1>
           <Badge variant="success" className="text-[10px]">Free • No API Key</Badge>
         </div>
-        <p className="text-white/50 text-sm sm:text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Live data on who&apos;s currently aboard the ISS and Tiangong space stations.
         </p>
       </div>
+
       <SpaceWidget />
+
+      <ApiGuide
+        endpoint="GET /api/space"
+        method="GET"
+        exampleResponse={`{
+  "number": 7,
+  "people": [
+    { "name": "Oleg Kononenko", "craft": "ISS" },
+    { "name": "Ye Guangfu", "craft": "Tiangong" }
+  ]
+}`}
+        sourceUrl="http://open-notify.org"
+        sourceLabel="Open Notify API"
+      />
     </div>
   )
 }

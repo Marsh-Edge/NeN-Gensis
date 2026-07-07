@@ -146,8 +146,8 @@ export function IpInfoWidget() {
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-red-600 flex items-center justify-center text-xl shadow-lg">
-                    🔒
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-red-600 flex items-center justify-center shadow-lg">
+                    <Shield className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
@@ -212,7 +212,7 @@ export function IpInfoWidget() {
                   {data.hosting ? "⚠ Hosting Provider" : "✅ Not Hosting"}
                 </Badge>
                 <Badge variant={data.mobile ? "glass" : "success"} className="text-xs">
-                  {data.mobile ? "📱 Mobile Network" : "✅ Not Mobile"}
+                  {data.mobile ? "Mobile Network" : "Not Mobile"}
                 </Badge>
               </div>
             </CardContent>
@@ -227,8 +227,8 @@ export function IpInfoWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <span className="text-4xl block mb-3">🔒</span>
-            <p className="text-white/50 text-sm">
+            <Shield className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
               Your IP info will load automatically — or search any IP or domain
             </p>
           </CardContent>

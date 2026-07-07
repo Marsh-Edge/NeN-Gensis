@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Search } from "lucide-react"
+import { ToolIcon } from "@/lib/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -138,8 +139,8 @@ export function DnsLookupWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <span className="text-4xl block mb-3">🌐</span>
-            <p className="text-white/50 text-sm">
+            <ToolIcon slug="dns-lookup" className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
               Enter a domain and select a record type to look up
             </p>
           </CardContent>

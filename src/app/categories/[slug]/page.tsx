@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { CategoryIcon } from "@/lib/icons"
 import { ApiCard } from "@/components/ApiCard"
 import { getCategory, getToolsByCategory } from "@/lib/constants"
 
@@ -36,7 +37,9 @@ export default async function CategoryPage(props: {
           </Link>
 
           <div className="flex items-center gap-4 mb-4">
-            <span className="text-4xl">{category.icon}</span>
+            <div className="w-14 h-14 rounded-xl bg-white/15 flex items-center justify-center">
+              <CategoryIcon slug={category.slug} className="w-7 h-7 text-white" />
+            </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
                 {category.name}
@@ -60,7 +63,7 @@ export default async function CategoryPage(props: {
 
       {tools.length === 0 ? (
         <div className="glass rounded-2xl p-8 text-center">
-          <p className="text-white/40 text-sm">
+          <p className="text-muted-foreground text-sm">
             No APIs available in this category yet.
           </p>
         </div>

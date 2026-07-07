@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Copy, RefreshCw } from "lucide-react"
+import { Copy, RefreshCw, KeyRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -164,8 +164,8 @@ export function PasswordGeneratorWidget() {
       {!password && (
         <Card>
           <CardContent className="p-8 text-center">
-            <span className="text-4xl block mb-3">🔑</span>
-            <p className="text-white/50 text-sm">
+            <KeyRound className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
               Configure your preferences and generate a secure password
             </p>
           </CardContent>

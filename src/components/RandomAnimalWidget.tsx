@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, PawPrint } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -47,13 +47,15 @@ export function RandomAnimalWidget() {
             onClick={() => switchType("cat")}
             className={`px-4 py-2 text-sm transition-colors ${type === "cat" ? "bg-white/15 text-white" : "text-white/40 hover:text-white/60"}`}
           >
-            🐱 Cat
+            <PawPrint className="w-4 h-4 mr-1.5 inline" />
+            Cat
           </button>
           <button
             onClick={() => switchType("fox")}
             className={`px-4 py-2 text-sm transition-colors ${type === "fox" ? "bg-white/15 text-white" : "text-white/40 hover:text-white/60"}`}
           >
-            🦊 Fox
+            <PawPrint className="w-4 h-4 mr-1.5 inline" />
+            Fox
           </button>
         </div>
         <Button onClick={handleShuffle} disabled={loading}>

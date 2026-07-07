@@ -22,63 +22,225 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --radius: 0.625rem;
+  --radius: 0.75rem;
   --sidebar-width: 16rem;
 }
 
+/* ── LIGHT THEME ── */
 :root {
+  --background: 210 40% 96%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 187 85% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 20% 92%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 20% 92%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 187 85% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 20% 85%;
+  --input: 214 20% 85%;
+  --ring: 187 85% 40%;
+}
+
+/* ── DARK THEME ── */
+.dark {
   --background: 224 71% 4%;
   --foreground: 213 31% 91%;
   --card: 224 71% 4%;
   --card-foreground: 213 31% 91%;
   --popover: 224 71% 4%;
-  --popover-foreground: 215 20.2% 65.1%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
+  --popover-foreground: 215 20% 65%;
+  --primary: 186 100% 50%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 32% 17%;
   --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --muted: 217 32% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 186 100% 50%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 63% 31%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --ring: 186 100% 50%;
 }
 
-* {
-  border-color: hsl(var(--border));
+* { border-color: hsl(var(--border)); }
+
+/* ── BODY ── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: linear-gradient(135deg, #0f0c29 0%, #1a1040 25%, #24243e 50%, #1a1040 75%, #0f0c29 100%);
   background-attachment: fixed;
   color: hsl(var(--foreground));
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
+.dark body {
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1040 25%, #24243e 50%, #1a1040 75%, #0f0c29 100%);
+}
+
+body:not(.dark) {
+  background: #f0f4f8;
+}
+
+/* ── GLASS UTILITIES ── */
 .glass {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.dark .glass {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark) .glass {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  transition: all 0.3s ease;
+}
+
+.dark .glass-strong {
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body:not(.dark) .glass-strong {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .glass-hover {
   transition: all 0.3s ease;
 }
 
-.glass-hover:hover {
+.dark .glass-hover:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(34, 211, 238, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
+}
+
+body:not(.dark) .glass-hover:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(8, 145, 178, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(8, 145, 178, 0.08);
+}
+
+/* ── NEON GLOW ── */
+.neon-glow {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15), 0 0 40px rgba(34, 211, 238, 0.05);
+}
+
+.dark .neon-glow {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15), 0 0 40px rgba(34, 211, 238, 0.05);
+}
+
+.neon-text {
+  color: #22d3ee;
+}
+
+.dark .neon-text {
+  color: #22d3ee;
+}
+
+body:not(.dark) .neon-text {
+  color: #0891b2;
+}
+
+/* ── CLICK GLOW RIPPLE ── */
+.click-glow {
+  position: fixed;
+  pointer-events: none;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 9999;
+}
+
+.dark .click-glow {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.25), transparent 70%);
+  animation: glow-expand-dark 0.7s ease-out forwards;
+}
+
+body:not(.dark) .click-glow {
+  background: radial-gradient(circle, rgba(8, 145, 178, 0.15), transparent 70%);
+  animation: glow-expand-light 0.7s ease-out forwards;
+}
+
+@keyframes glow-expand-dark {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+@keyframes glow-expand-light {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* ── PAGE ENTRY ANIMATIONS ── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+body:not(.dark) ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.3); }
+
+/* ── SELECTION ── */
+::selection {
+  background: rgba(34, 211, 238, 0.2);
+  color: inherit;
+}
+
+/* ── RING FOCUS ── */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }

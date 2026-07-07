@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Shield, Clock, Globe } from "lucide-react"
+import { Search, Shield, Clock, Globe, FileSearch } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -141,8 +141,8 @@ export function HeaderCheckWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <span className="text-4xl block mb-3">📋</span>
-            <p className="text-white/50 text-sm">
+            <FileSearch className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
               Enter a URL to inspect its HTTP response headers
             </p>
           </CardContent>

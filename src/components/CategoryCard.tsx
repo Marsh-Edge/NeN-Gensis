@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { CategoryIcon } from "@/lib/icons"
 import type { Category } from "@/lib/types"
 import { getToolsByCategory } from "@/lib/constants"
 
@@ -20,18 +21,18 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.accent} flex items-center justify-center text-xl shadow-lg`}>
-              {category.icon}
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.accent} flex items-center justify-center shadow-lg`}>
+              <CategoryIcon slug={category.slug} className="w-6 h-6 text-white" />
             </div>
             <Badge variant="glass" className="text-xs">
               {activeTools.length} active
             </Badge>
           </div>
 
-          <h3 className="text-lg font-semibold text-white mb-1">
+          <h3 className="text-lg font-semibold text-foreground mb-1">
             {category.name}
           </h3>
-          <p className="text-sm text-white/50 leading-relaxed mb-4">
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             {category.description}
           </p>
 
@@ -48,7 +49,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-white/30 pt-2 border-t border-white/5">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border">
             <span>{tools.length} tools</span>
             <span>{activeTools.length} available now</span>
           </div>

@@ -2,7 +2,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ToolIcon } from "@/lib/icons"
 import { DictionaryWidget } from "@/components/DictionaryWidget"
+import { ApiGuide } from "@/components/ApiGuide"
 
 export default function DictionaryPage() {
   return (
@@ -14,22 +16,40 @@ export default function DictionaryPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <span className="text-2xl">📖</span>
+          <ToolIcon slug="dictionary" className="w-7 h-7 text-foreground" />
         </div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Dictionary
           </h1>
           <Badge variant="success" className="text-[10px]">
             Free • No API Key
           </Badge>
         </div>
-        <p className="text-white/50 text-sm sm:text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Look up word definitions, phonetics, pronunciations, and example sentences.
         </p>
       </div>
 
       <DictionaryWidget />
+
+      <ApiGuide
+        endpoint="POST /api/dictionary"
+        method="POST"
+        requestBody='{ "word": "serendipity" }'
+        exampleResponse={`{
+  "word": "serendipity",
+  "phonetic": "/ˌsɛrənˈdɪpɪti/",
+  "meanings": [
+    {
+      "partOfSpeech": "noun",
+      "definitions": [...]
+    }
+  ]
+}`}
+        sourceUrl="https://api.dictionaryapi.dev"
+        sourceLabel="Free Dictionary API"
+      />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Rocket, Satellite } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -69,9 +70,9 @@ export function SpaceWidget() {
     <div className="space-y-6">
       <Card>
         <CardContent className="p-6 text-center">
-          <span className="text-5xl block mb-3">🛸</span>
-          <p className="text-3xl font-bold text-white">{data.number}</p>
-          <p className="text-sm text-white/50 mt-1">
+          <Rocket className="w-12 h-12 mx-auto mb-3 text-cyan-400" />
+          <p className="text-3xl font-bold text-foreground">{data.number}</p>
+          <p className="text-sm text-muted-foreground mt-1">
             people currently in space
           </p>
         </CardContent>
@@ -81,8 +82,8 @@ export function SpaceWidget() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🛰</span>
-              <h3 className="font-semibold text-white text-sm">International Space Station</h3>
+              <Satellite className="w-5 h-5 text-blue-400" />
+              <h3 className="font-semibold text-foreground text-sm">International Space Station</h3>
               <Badge variant="glass" className="ml-auto text-xs">{iss.length}</Badge>
             </div>
             <div className="space-y-2">
@@ -99,14 +100,14 @@ export function SpaceWidget() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🇨🇳</span>
-              <h3 className="font-semibold text-white text-sm">Tiangong</h3>
+              <Satellite className="w-5 h-5 text-red-400" />
+              <h3 className="font-semibold text-foreground text-sm">Tiangong</h3>
               <Badge variant="glass" className="ml-auto text-xs">{tiangong.length}</Badge>
             </div>
             <div className="space-y-2">
               {tiangong.map((person) => (
-                <div key={person.name} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
-                  <span className="text-sm text-white/80">{person.name}</span>
+                <div key={person.name} className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
+                  <span className="text-sm text-foreground/80">{person.name}</span>
                   <CraftBadge craft="Tiangong" />
                 </div>
               ))}
@@ -116,10 +117,10 @@ export function SpaceWidget() {
       </div>
 
       {data.people.length === 0 && (
-        <p className="text-sm text-white/40 text-center">No one is currently in space.</p>
+        <p className="text-sm text-muted-foreground text-center">No one is currently in space.</p>
       )}
 
-      <p className="text-xs text-white/30 text-center">
+      <p className="text-xs text-muted-foreground text-center">
         Powered by Open Notify (free, no API key needed)
       </p>
     </div>

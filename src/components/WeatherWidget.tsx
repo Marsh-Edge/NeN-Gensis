@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Sunrise, Sunset } from "lucide-react"
+import { Search, Sunrise, Sunset, CloudSun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -257,8 +257,8 @@ export function WeatherWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <span className="text-4xl block mb-3">🌤</span>
-            <p className="text-white/50 text-sm">
+            <CloudSun className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
               Search for a city to see current weather and forecast
             </p>
           </CardContent>
