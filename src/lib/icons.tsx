@@ -5,6 +5,7 @@ import {
   Map, GraduationCap, BookMarked, Rocket,
   GitBranch,  Package,  PackageOpen,  Fingerprint,
   ImagePlus, UserCircle, Palette, PawPrint,
+  DollarSign,
   type LucideIcon,
 } from "lucide-react"
 import { cn } from "./utils"
@@ -37,6 +38,7 @@ const toolIconMap: Record<string, LucideIcon> = {
   "avatar-generator": UserCircle,
   "color-tools": Palette,
   "random-animal": PawPrint,
+  "currency-converter": DollarSign,
 }
 
 export function CategoryIcon({ slug, className }: { slug: string; className?: string }) {

@@ -201,3 +201,11 @@ export interface RandomAnimalData {
   tags: string[]
   source: string
 }
+
+export interface CurrencyData {
+  amount: number
+  from: string
+  to: string
+  rate: number
+  result: number
+}

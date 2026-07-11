@@ -191,6 +191,14 @@ export const apiTools: ApiTool[] = [
     isInteractive: true,
     status: "active",
   },
+  {
+    slug: "currency-converter",
+    name: "Currency Converter",
+    description: "Convert between 30+ currencies with live exchange rates from the ECB",
+    categorySlug: "data",
+    isInteractive: true,
+    status: "active",
+  },
 ]
 
 export const categoryDotColors: Record<string, string> = {
@@ -221,6 +229,7 @@ export const categoryToolIcons: Record<string, string> = {
   "avatar-generator": "👤",
   "color-tools": "🎨",
   "random-animal": "🐱",
+  "currency-converter": "💱",
 }
 
 export const dnsTypeLabels: Record<number, string> = {
