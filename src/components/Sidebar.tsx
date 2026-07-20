@@ -8,6 +8,7 @@ import { categories, categoryDotColors } from "@/lib/constants"
 import { CategoryIcon } from "@/lib/icons"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -55,18 +56,21 @@ export function Sidebar() {
       <Separator />
 
       <div className="p-4 space-y-2">
-        <Link
-          href="/about"
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-200",
-            pathname === "/about"
-              ? "bg-white/10 text-foreground font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-          )}
-        >
-          <Info className="w-4 h-4" />
-          <span>About</span>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/about"
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-200",
+              pathname === "/about"
+                ? "bg-white/10 text-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+            )}
+          >
+            <Info className="w-4 h-4" />
+            <span>About</span>
+          </Link>
+          <ThemeToggle />
+        </div>
         <a
           href="https://github.com/Marsh-Edge"
           target="_blank"
