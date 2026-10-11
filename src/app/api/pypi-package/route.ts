@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://pypi.org/pypi"
 
 export async function POST(req: Request) {
   try {
-    const { package: pkg } = await req.json()
+    const { package: pkg } = await readJson(req)
     if (!pkg || typeof pkg !== "string" || !pkg.trim()) {
       return NextResponse.json({ error: "Package name is required" }, { status: 400 })
     }
 
     const name = pkg.trim().toLowerCase()
-    const res = await fetch(`${API_URL}/${encodeURIComponent(name)}/json`, {
+    const res = await fetchWithTimeout(`${API_URL}/${encodeURIComponent(name)}/json`, {
       headers: { "Accept": "application/json" },
     })
 
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
       projectUrls: info.project_urls ?? {},
       requiresDist: info.requires_dist ?? [],
     })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

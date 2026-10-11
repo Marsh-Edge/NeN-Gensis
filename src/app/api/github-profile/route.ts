@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://api.github.com"
 
 export async function POST(req: Request) {
   try {
-    const { username } = await req.json()
+    const { username } = await readJson(req)
     if (!username || typeof username !== "string" || !username.trim()) {
       return NextResponse.json({ error: "Username is required" }, { status: 400 })
     }
@@ -12,16 +13,22 @@ export async function POST(req: Request) {
     const login = username.trim()
 
     const [userRes, reposRes] = await Promise.all([
-      fetch(`${API_URL}/users/${encodeURIComponent(login)}`, {
+      fetchWithTimeout(`${API_URL}/users/${encodeURIComponent(login)}`, {
         headers: { "Accept": "application/json", "User-Agent": "NeN-Gensis" },
       }),
-      fetch(`${API_URL}/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=10`, {
+      fetchWithTimeout(`${API_URL}/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=10`, {
         headers: { "Accept": "application/json", "User-Agent": "NeN-Gensis" },
       }),
     ])
 
     if (userRes.status === 404) {
       return NextResponse.json({ error: "GitHub user not found" }, { status: 404 })
+    }
+    if (userRes.status === 403 || userRes.status === 429) {
+      return NextResponse.json(
+        { error: "GitHub rate limit reached — please try again shortly" },
+        { status: 429 }
+      )
     }
     if (!userRes.ok) {
       return NextResponse.json({ error: "Failed to fetch GitHub profile" }, { status: 502 })
@@ -52,7 +59,7 @@ export async function POST(req: Request) {
         url: r.html_url ?? "",
       })),
     })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

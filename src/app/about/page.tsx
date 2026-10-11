@@ -19,7 +19,7 @@ export default function AboutPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">NeN-Gensis</h1>
-            <p className="text-muted-foreground text-sm">Free API Hub — v1.0.0</p>
+            <p className="text-muted-foreground text-sm">Free API Hub — v0.1.0</p>
           </div>
         </div>
 
@@ -37,7 +37,7 @@ export default function AboutPage() {
           </p>
 
           <p>
-            Built with <span className="text-foreground">Next.js 15</span>,{" "}
+            Built with <span className="text-foreground">Next.js 16</span>,{" "}
             <span className="text-foreground">TypeScript</span>, and{" "}
             <span className="text-foreground">Tailwind CSS 4</span>.
             UI components powered by shadcn/ui and Lucide icons.

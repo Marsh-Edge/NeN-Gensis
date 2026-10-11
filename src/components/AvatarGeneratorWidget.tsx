@@ -70,8 +70,8 @@ export function AvatarGeneratorWidget() {
     <div className="space-y-6">
       <form onSubmit={handleGenerate} className="flex flex-wrap gap-2 sm:gap-3 items-end">
         <div className="flex-1 min-w-[150px]">
-          <label className="text-xs text-white/40 mb-1 block">Seed (name)</label>
-          <Input placeholder="Any text..." value={seed} onChange={(e) => setSeed(e.target.value)} />
+          <label htmlFor="avatar-seed" className="text-xs text-white/40 mb-1 block">Seed (name)</label>
+          <Input id="avatar-seed" placeholder="Any text..." value={seed} onChange={(e) => setSeed(e.target.value)} />
         </div>
         <Button type="submit" disabled={loading}>Generate</Button>
         <Button type="button" variant="outline" onClick={handleRandom} disabled={loading}>

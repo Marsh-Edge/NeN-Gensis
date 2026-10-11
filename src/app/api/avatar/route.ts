@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const VALID_STYLES = ["avataaars", "bottts", "identicon", "initials", "lorelei", "adventurer", "big-ears", "big-smile", "croodles", "fun-emoji", "icons", "lorelei-neutral", "micah", "miniavs", "notionists", "open-peeps", "personas", "pixel-art", "rings", "shapes", "thumbs"]
 
 export async function POST(req: Request) {
   try {
-    const { seed, style } = await req.json()
+    const { seed, style } = await readJson(req)
 
     if (!seed || typeof seed !== "string" || !seed.trim()) {
       return NextResponse.json({ error: "Seed is required" }, { status: 400 })
     }
 
-    const s = (style ?? "avataaars").toLowerCase()
+    const s = (typeof style === "string" ? style : "avataaars").toLowerCase()
     const finalStyle = VALID_STYLES.includes(s) ? s : "avataaars"
     const finalSeed = encodeURIComponent(seed.trim())
 
-    const res = await fetch(`https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${finalSeed}`, {
+    const res = await fetchWithTimeout(`https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${finalSeed}`, {
       headers: { "Accept": "image/svg+xml" },
     })
 
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
       seed: seed.trim(),
       style: finalStyle,
     })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

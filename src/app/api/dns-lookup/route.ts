@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://dns.google/resolve"
 const DNS_TYPES: Record<string, number> = {
@@ -23,7 +24,7 @@ const DNS_TYPE_LABELS: Record<number, string> = {
 
 export async function POST(req: Request) {
   try {
-    const { domain, type } = await req.json()
+    const { domain, type } = await readJson(req)
 
     if (!domain || typeof domain !== "string" || !domain.trim()) {
       return NextResponse.json(
@@ -32,10 +33,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const qtype = type && DNS_TYPES[type.toUpperCase()] ? type.toUpperCase() : "A"
+    const typeStr = typeof type === "string" ? type.toUpperCase() : ""
+    const qtype = DNS_TYPES[typeStr] ? typeStr : "A"
     const qtypeNum = DNS_TYPES[qtype]
 
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${API_URL}?name=${encodeURIComponent(domain.trim())}&type=${qtypeNum}`,
       { headers: { "Accept": "application/dns-json" } }
     )
@@ -72,10 +74,7 @@ export async function POST(req: Request) {
       records,
       status: "success",
     })
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

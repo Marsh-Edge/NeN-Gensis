@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en"
 
 export async function POST(req: Request) {
   try {
-    const { word } = await req.json()
+    const { word } = await readJson(req)
 
     if (!word || typeof word !== "string" || !word.trim()) {
       return NextResponse.json(
@@ -13,12 +14,14 @@ export async function POST(req: Request) {
       )
     }
 
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${API_URL}/${encodeURIComponent(word.trim().toLowerCase())}`,
       { headers: { "Accept": "application/json" } }
     )
 
-    if (res.status === 404) {
+    const data = await res.json().catch(() => null)
+
+    if (res.status === 404 || !Array.isArray(data) || data.length === 0) {
       return NextResponse.json(
         { error: `Word "${word.trim()}" not found` },
         { status: 404 }
@@ -32,7 +35,6 @@ export async function POST(req: Request) {
       )
     }
 
-    const data = await res.json()
     const entry = data[0]
 
     return NextResponse.json({
@@ -54,10 +56,7 @@ export async function POST(req: Request) {
         })),
       })),
     })
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

@@ -80,8 +80,9 @@ export function ColorToolsWidget() {
     <div className="space-y-6">
       <div className="flex gap-2 sm:gap-3 items-end">
         <div className="flex-1">
-          <label className="text-xs text-white/40 mb-1 block">HEX Color</label>
+          <label htmlFor="color-hex" className="text-xs text-white/40 mb-1 block">HEX Color</label>
           <Input
+            id="color-hex"
             value={hex}
             onChange={(e) => setHex(e.target.value)}
             placeholder="#6366f1"
@@ -90,6 +91,7 @@ export function ColorToolsWidget() {
         </div>
         <button
           onClick={() => setHex(randomHex())}
+          aria-label="Random color"
           className="glass rounded-lg p-2.5 hover:bg-white/10 transition-colors"
         >
           <RefreshCw className="w-4 h-4 text-white/60" />

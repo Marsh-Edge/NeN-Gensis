@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 const WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
@@ -29,7 +30,7 @@ const weatherCodes: Record<number, { label: string; icon: string }> = {
 
 export async function POST(req: Request) {
   try {
-    const { city } = await req.json()
+    const { city } = await readJson(req)
 
     if (!city || typeof city !== "string" || !city.trim()) {
       return NextResponse.json(
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const geoRes = await fetch(
+    const geoRes = await fetchWithTimeout(
       `${GEOCODING_URL}?name=${encodeURIComponent(city.trim())}&count=1&language=en&format=json`
     )
 
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
 
     const { latitude, longitude, name, country } = geoData.results[0]
 
-    const weatherRes = await fetch(
+    const weatherRes = await fetchWithTimeout(
       `${WEATHER_URL}?latitude=${latitude}&longitude=${longitude}` +
       "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,surface_pressure,uv_index,cloud_cover" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max" +
@@ -77,6 +78,13 @@ export async function POST(req: Request) {
     const weatherData = await weatherRes.json()
     const current = weatherData.current
     const daily = weatherData.daily
+
+    if (!current || !daily || !Array.isArray(daily.time)) {
+      return NextResponse.json(
+        { error: "Unexpected weather data received" },
+        { status: 502 }
+      )
+    }
 
     const currentCode = current.weather_code as number
     const currentWeather = weatherCodes[currentCode] ?? {
@@ -117,10 +125,7 @@ export async function POST(req: Request) {
       icon: currentWeather.icon,
       forecast,
     })
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

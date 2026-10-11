@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
+import Script from "next/script"
 import "./globals.css"
 import { Sidebar } from "@/components/Sidebar"
 import { TopBar } from "@/components/TopBar"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import { ClickGlow } from "@/components/ClickGlow"
-import { KeyboardGuard } from "@/components/KeyboardGuard"
+
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="light"?"light":"dark";document.documentElement.classList.toggle("dark",d==="dark");}catch(e){document.documentElement.classList.add("dark");}})();`
 
 export const metadata: Metadata = {
   title: "NeN-Gensis — Free API Hub",
@@ -19,6 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className="min-h-full font-sans">
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
         <ThemeProvider>
           <Sidebar />
           <TopBar />
@@ -28,7 +33,6 @@ export default function RootLayout({
             </div>
           </main>
           <ClickGlow />
-          <KeyboardGuard />
         </ThemeProvider>
       </body>
     </html>

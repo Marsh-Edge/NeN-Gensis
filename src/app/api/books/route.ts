@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://openlibrary.org/search.json"
 
 export async function POST(req: Request) {
   try {
-    const { query } = await req.json()
+    const { query } = await readJson(req)
     if (!query || typeof query !== "string" || !query.trim()) {
       return NextResponse.json({ error: "Search query is required" }, { status: 400 })
     }
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
       limit: "20",
     })
 
-    const res = await fetch(`${API_URL}?${params}`, {
+    const res = await fetchWithTimeout(`${API_URL}?${params}`, {
       headers: { "Accept": "application/json" },
     })
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       results,
       total: data.numFound ?? 0,
     })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

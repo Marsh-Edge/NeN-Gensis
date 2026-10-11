@@ -52,12 +52,12 @@ export function PlaceholderWidget() {
     <div className="space-y-6">
       <form onSubmit={handleGenerate} className="flex flex-wrap gap-2 sm:gap-3 items-end">
         <div className="flex-1 min-w-[100px]">
-          <label className="text-xs text-white/40 mb-1 block">Width (px)</label>
-          <Input type="number" min={1} max={4000} value={width} onChange={(e) => setWidth(e.target.value)} />
+          <label htmlFor="placeholder-width" className="text-xs text-white/40 mb-1 block">Width (px)</label>
+          <Input id="placeholder-width" type="number" min={1} max={4000} value={width} onChange={(e) => setWidth(e.target.value)} />
         </div>
         <div className="flex-1 min-w-[100px]">
-          <label className="text-xs text-white/40 mb-1 block">Height (px)</label>
-          <Input type="number" min={1} max={4000} value={height} onChange={(e) => setHeight(e.target.value)} />
+          <label htmlFor="placeholder-height" className="text-xs text-white/40 mb-1 block">Height (px)</label>
+          <Input id="placeholder-height" type="number" min={1} max={4000} value={height} onChange={(e) => setHeight(e.target.value)} />
         </div>
         <Button type="submit" disabled={loading}>
           Generate

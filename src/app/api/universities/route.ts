@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
+// universities.hipolabs.com does not serve HTTPS on port 443, so this upstream
+// is HTTP-only. The payload is public, non-sensitive data.
 const API_URL = "http://universities.hipolabs.com/search"
 
 export async function POST(req: Request) {
   try {
-    const { name, country } = await req.json()
+    const { name, country } = await readJson(req)
     if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json({ error: "University name is required" }, { status: 400 })
     }
@@ -14,7 +17,7 @@ export async function POST(req: Request) {
       params.set("country", country.trim())
     }
 
-    const res = await fetch(`${API_URL}?${params}`, {
+    const res = await fetchWithTimeout(`${API_URL}?${params}`, {
       headers: { "Accept": "application/json" },
     })
 
@@ -36,7 +39,7 @@ export async function POST(req: Request) {
     }))
 
     return NextResponse.json({ results })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

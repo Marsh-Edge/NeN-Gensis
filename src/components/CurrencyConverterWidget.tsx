@@ -46,15 +46,18 @@ function CurrencySelect({
   value,
   onChange,
   label,
+  id,
 }: {
   value: string
   onChange: (val: string) => void
   label: string
+  id: string
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs text-foreground/40">{label}</label>
+      <label htmlFor={id} className="text-xs text-foreground/40">{label}</label>
       <select
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full h-10 rounded-xl border border-border bg-background/50 px-3 text-sm text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500/40"
@@ -120,8 +123,9 @@ export function CurrencyConverterWidget() {
         <CardContent className="p-6 space-y-5">
           <form onSubmit={handleConvert} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-xs text-foreground/40">Amount</label>
+              <label htmlFor="currency-amount" className="text-xs text-foreground/40">Amount</label>
               <Input
+                id="currency-amount"
                 type="number"
                 min="0"
                 step="any"
@@ -134,7 +138,7 @@ export function CurrencyConverterWidget() {
 
             <div className="flex items-end gap-3">
               <div className="flex-1">
-                <CurrencySelect value={from} onChange={setFrom} label="From" />
+                <CurrencySelect id="currency-from" value={from} onChange={setFrom} label="From" />
               </div>
 
               <Button
@@ -144,12 +148,13 @@ export function CurrencyConverterWidget() {
                 className="mb-0.5 shrink-0"
                 onClick={swapCurrencies}
                 title="Swap currencies"
+                aria-label="Swap currencies"
               >
                 <ArrowRightLeft className="h-4 w-4" />
               </Button>
 
               <div className="flex-1">
-                <CurrencySelect value={to} onChange={setTo} label="To" />
+                <CurrencySelect id="currency-to" value={to} onChange={setTo} label="To" />
               </div>
             </div>
 

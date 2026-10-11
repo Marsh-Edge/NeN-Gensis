@@ -219,7 +219,7 @@ export function IpInfoWidget() {
           </Card>
 
           <p className="text-xs text-white/30 text-center">
-            Powered by ip-api.com (free, no API key needed)
+            Powered by ipwho.is (free, no API key needed)
           </p>
         </>
       )}

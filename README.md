@@ -38,7 +38,7 @@
 
 ## About the Project
 
-NeN-Gensis is a free, open-source API tool hub that aggregates 19+ publicly available APIs into interactive, categorized tool pages. It serves as a one-stop destination for weather forecasts, DNS lookups, QR code generation, password generation, IP geolocation, dictionary lookups, and much more.
+NeN-Gensis is a free, open-source API tool hub that aggregates 20+ publicly available APIs into interactive, categorized tool pages. It serves as a one-stop destination for weather forecasts, DNS lookups, QR code generation, password generation, IP geolocation, dictionary lookups, currency conversion, and much more.
 
 **No signup required. No rate limits.** Every tool is backed by server-side Next.js API routes that proxy requests to external free APIs — keeping your browser clean and your data private.
 
@@ -48,7 +48,7 @@ NeN-Gensis is a free, open-source API tool hub that aggregates 19+ publicly avai
 
 | Feature | Description |
 |---------|-------------|
-| **19+ Interactive Tools** | Weather forecasts, DNS lookups, QR codes, password generation, and more |
+| **20+ Interactive Tools** | Weather forecasts, DNS lookups, QR codes, password generation, and more |
 | **5 Categories** | General, Security & Network, Data & Knowledge, Development, Media |
 | **No Signup / No Rate Limits** | Every tool is free and instantly accessible |
 | **Dark / Light Theme** | Toggle between modes with persistent preference |
@@ -87,6 +87,7 @@ NeN-Gensis is a free, open-source API tool hub that aggregates 19+ publicly avai
 | [Universities](src/app/tools/universities/page.tsx) | Find universities and colleges worldwide |
 | [Book Search](src/app/tools/books/page.tsx) | Search books by title or author |
 | [People in Space](src/app/tools/space/page.tsx) | See who's currently aboard the ISS and Tiangong |
+| [Currency Converter](src/app/tools/currency-converter/page.tsx) | Convert between 30+ currencies with live ECB exchange rates |
 
 ### Development
 
@@ -130,7 +131,7 @@ nen-gensis/
 ├── public/                     # Static assets
 ├── src/
 │   ├── app/
-│   │   ├── api/                # Server-side API routes (16 endpoints)
+│   │   ├── api/                # Server-side API routes (17 endpoints)
 │   │   │   ├── weather/route.ts
 │   │   │   ├── dictionary/route.ts
 │   │   │   ├── dns-lookup/route.ts
@@ -140,6 +141,7 @@ nen-gensis/
 │   │   │   ├── universities/route.ts
 │   │   │   ├── books/route.ts
 │   │   │   ├── space/route.ts
+│   │   │   ├── currency/route.ts
 │   │   │   ├── github-profile/route.ts
 │   │   │   ├── npm-package/route.ts
 │   │   │   ├── pypi-package/route.ts
@@ -148,7 +150,7 @@ nen-gensis/
 │   │   │   ├── avatar/route.ts
 │   │   │   └── random-animal/route.ts
 │   │   ├── categories/         # Category listing & detail pages
-│   │   ├── tools/              # 19 individual tool pages
+│   │   ├── tools/              # 20 individual tool pages
 │   │   ├── about/              # About page
 │   │   ├── layout.tsx          # Root layout (sidebar, topbar, theme)
 │   │   ├── page.tsx            # Homepage
@@ -231,6 +233,8 @@ All tools are backed by server-side Next.js API routes. Most endpoints accept a 
 | `/api/universities` | `POST` | `{ name, country? }` | University search |
 | `/api/books` | `POST` | `{ q }` | Book search via Open Library |
 | `/api/space` | `GET` | — | People currently in space |
+| `/api/currency` | `POST` | `{ amount, from, to }` | Currency conversion via ECB rates |
+| `/api/currency` | `GET` | — | Supported currency list |
 | `/api/github-profile` | `POST` | `{ username }` | GitHub profile and repos |
 | `/api/npm-package` | `POST` | `{ name }` | npm package metadata |
 | `/api/pypi-package` | `POST` | `{ name }` | PyPI package metadata |

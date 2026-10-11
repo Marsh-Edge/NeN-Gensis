@@ -1,60 +1,60 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const NOW_URL = "https://countriesnow.space/api/v0.1"
 
+async function parseSettled(
+  result: PromiseSettledResult<Response>
+): Promise<Record<string, unknown> | null> {
+  if (result.status !== "fulfilled") return null
+  const res = result.value
+  if (!res.ok) {
+    await res.body?.cancel()
+    return null
+  }
+  return res.json().catch(() => null)
+}
+
 export async function POST(req: Request) {
   try {
-    const { country } = await req.json()
+    const { country } = await readJson(req)
     if (!country || typeof country !== "string" || !country.trim()) {
       return NextResponse.json({ error: "Country name is required" }, { status: 400 })
     }
     const name = country.trim().toLowerCase()
 
-    const [capitalRes, currencyRes, flagRes, populationRes, positionsRes] = await Promise.allSettled([
-      fetch(`${NOW_URL}/countries/capital`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: name }),
-      }),
-      fetch(`${NOW_URL}/countries/currency`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: name }),
-      }),
-      fetch(`${NOW_URL}/countries/flag/images`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: name }),
-      }),
-      fetch(`${NOW_URL}/countries/population`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: name }),
-      }),
-      fetch(`${NOW_URL}/countries/positions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: name }),
-      }),
-    ])
+    const endpoints = [
+      `${NOW_URL}/countries/capital`,
+      `${NOW_URL}/countries/currency`,
+      `${NOW_URL}/countries/flag/images`,
+      `${NOW_URL}/countries/population`,
+      `${NOW_URL}/countries/positions`,
+    ]
 
-    const capitalData = capitalRes.status === "fulfilled" ? await capitalRes.value.json() : null
-    const currencyData = currencyRes.status === "fulfilled" ? await currencyRes.value.json() : null
-    const flagData = flagRes.status === "fulfilled" ? await flagRes.value.json() : null
-    const populationData = populationRes.status === "fulfilled" ? await populationRes.value.json() : null
-    const positionsData = positionsRes.status === "fulfilled" ? await positionsRes.value.json() : null
+    const settled = await Promise.allSettled(
+      endpoints.map((url) =>
+        fetchWithTimeout(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country: name }),
+        })
+      )
+    )
+
+    const [capitalData, currencyData, flagData, populationData, positionsData] =
+      await Promise.all(settled.map(parseSettled))
 
     if (!capitalData?.data && !currencyData?.data && !flagData?.data && !populationData?.data && !positionsData?.data) {
       return NextResponse.json({ error: "Country not found" }, { status: 404 })
     }
 
-    const c = capitalData?.data ?? {}
-    const cu = currencyData?.data ?? {}
-    const f = flagData?.data ?? {}
-    const p = populationData?.data ?? {}
-    const po = positionsData?.data ?? {}
+    const c = (capitalData?.data ?? {}) as Record<string, unknown>
+    const cu = (currencyData?.data ?? {}) as Record<string, unknown>
+    const f = (flagData?.data ?? {}) as Record<string, unknown>
+    const p = (populationData?.data ?? {}) as Record<string, unknown>
+    const po = (positionsData?.data ?? {}) as Record<string, unknown>
 
-    const popCounts = p.populationCounts ?? []
+    const popCounts = Array.isArray(p.populationCounts) ? p.populationCounts : []
     const latestPop = popCounts.length > 0 ? popCounts[popCounts.length - 1] : {}
 
     return NextResponse.json({
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       population: latestPop.value ?? null,
       populationYear: latestPop.year ?? null,
     })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

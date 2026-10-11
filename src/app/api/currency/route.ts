@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { fetchWithTimeout, readJson, toErrorResponse } from "@/lib/api"
 
 const API_URL = "https://api.frankfurter.app"
 
@@ -9,9 +10,11 @@ const SUPPORTED_CURRENCIES = [
   "ZAR",
 ]
 
+export const revalidate = 86400
+
 export async function POST(req: Request) {
   try {
-    const { amount, from, to } = await req.json()
+    const { amount, from, to } = await readJson(req)
 
     if (typeof amount !== "number" || isNaN(amount) || amount <= 0) {
       return NextResponse.json(
@@ -20,8 +23,8 @@ export async function POST(req: Request) {
       )
     }
 
-    const fromCurrency = (from ?? "").toString().toUpperCase().trim()
-    const toCurrency = (to ?? "").toString().toUpperCase().trim()
+    const fromCurrency = String(from ?? "").toUpperCase().trim()
+    const toCurrency = String(to ?? "").toUpperCase().trim()
 
     if (!fromCurrency || !toCurrency) {
       return NextResponse.json(
@@ -45,10 +48,9 @@ export async function POST(req: Request) {
         rate: 1,
         result: Math.round(amount * 100) / 100,
       })
-      return
     }
 
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${API_URL}/latest?from=${fromCurrency}&to=${toCurrency}`
     )
 
@@ -60,9 +62,10 @@ export async function POST(req: Request) {
     }
 
     const data = await res.json()
+    const rates = data?.rates as Record<string, number> | undefined
+    const rate = rates?.[toCurrency]
 
-    const rate = data.rates[toCurrency]
-    if (rate === undefined) {
+    if (typeof rate !== "number" || isNaN(rate)) {
       return NextResponse.json(
         { error: `Rate not available for ${toCurrency}` },
         { status: 404 }
@@ -76,17 +79,14 @@ export async function POST(req: Request) {
       rate: Math.round(rate * 10000) / 10000,
       result: Math.round(amount * rate * 100) / 100,
     })
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }
 
 export async function GET() {
   try {
-    const res = await fetch(`${API_URL}/currencies`)
+    const res = await fetchWithTimeout(`${API_URL}/currencies`)
 
     if (!res.ok) {
       return NextResponse.json(
@@ -96,11 +96,10 @@ export async function GET() {
     }
 
     const data = await res.json()
-    return NextResponse.json(data)
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json(data, {
+      headers: { "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600" },
+    })
+  } catch (err) {
+    return toErrorResponse(err)
   }
 }

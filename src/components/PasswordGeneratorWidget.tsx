@@ -72,12 +72,13 @@ export function PasswordGeneratorWidget() {
         <CardContent className="p-6 space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm text-white/70">Password Length: {length}</label>
+              <label htmlFor="password-length" className="text-sm text-white/70">Password Length: {length}</label>
               <Badge variant={strength.variant} className="text-xs">
                 {strength.label}
               </Badge>
             </div>
             <input
+              id="password-length"
               type="range"
               min={6}
               max={64}
