@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
@@ -42,7 +42,7 @@ export function ToolPage({ slug, widget }: { slug: string; widget: ReactNode }) 
         </p>
       </div>
 
-      {widget}
+      <Suspense fallback={null}>{widget}</Suspense>
 
       {doc && <ApiGuide {...doc} />}
     </div>

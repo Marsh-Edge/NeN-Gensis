@@ -1,38 +1,38 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Search, MapPin, Wifi, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
-import { Flag, InfoRow, MetricBox } from "@/components/widgets/shared"
+import { Flag, InfoRow, MetricBox, ErrorState } from "@/components/widgets/shared"
+import { useUrlParam } from "@/lib/useUrlParam"
 import type { IpInfoData } from "@/lib/types"
 
 export function IpInfoWidget() {
-  const [query, setQuery] = useState("")
+  const { value: initial, set: setUrl } = useUrlParam("ip")
+  const [query, setQuery] = useState(initial)
   const [data, setData] = useState<IpInfoData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const lastQuery = useRef("")
   const fetchedRef = useRef(false)
 
-  useEffect(() => {
-    if (!fetchedRef.current) {
-      fetchedRef.current = true
-      fetchMyIp()
-    }
-  }, [])
+  async function run(raw: string) {
+    const value = raw.trim()
+    lastQuery.current = value
 
-  async function fetchMyIp() {
     setLoading(true)
     setError("")
     setData(null)
+
     try {
       const res = await fetch("/api/ip-info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify(value ? { ip: value } : {}),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -41,64 +41,51 @@ export function IpInfoWidget() {
       }
       setData(json)
     } catch {
-      setError("Failed to fetch your IP info")
+      setError("Failed to fetch IP info")
     } finally {
       setLoading(false)
     }
   }
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!query.trim()) return
-
-    setLoading(true)
-    setError("")
-    setData(null)
-
-    try {
-      const res = await fetch("/api/ip-info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ip: query.trim() }),
-      })
-      const json = await res.json()
-      if (!res.ok) {
-        setError(json.error ?? "Something went wrong")
-        return
-      }
-      setData(json)
-    } catch {
-      setError("Failed to fetch IP data")
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    if (!fetchedRef.current) {
+      fetchedRef.current = true
+      run(initial)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    setUrl(query.trim())
+    run(query)
   }
 
   return (
     <div className="space-y-6">
       <form onSubmit={handleSearch} className="flex gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
         <Input
-          placeholder="Enter an IP address or domain..."
+          name="ip"
+          autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="search"
+          inputMode="text"
+          placeholder="Enter an IP address or domain…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="IP address or domain"
           className="flex-1 min-w-0"
         />
-        <Button type="button" variant="outline" onClick={fetchMyIp} disabled={loading}>
+        <Button type="button" variant="outline" onClick={() => run("")} disabled={loading}>
           My IP
         </Button>
         <Button type="submit" disabled={loading || !query.trim()}>
-          <Search className="h-4 w-4 mr-2" />
+          <Search className="h-4 w-4 mr-2" aria-hidden="true" />
           Search
         </Button>
       </form>
 
-      {error && (
-        <Card>
-          <CardContent className="p-4 text-sm text-red-400">
-            {error}
-          </CardContent>
-        </Card>
-      )}
+      {error && <ErrorState message={error} onRetry={() => run(lastQuery.current)} />}
 
       {loading && (
         <div className="space-y-4">
@@ -115,36 +102,36 @@ export function IpInfoWidget() {
 
       {!loading && data && (
         <>
-          <Card>
+          <Card className="animate-fade-in-up">
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-red-600 flex items-center justify-center shadow-lg">
-                    <Shield className="w-6 h-6 text-white" />
+                    <Shield className="w-6 h-6 text-white" aria-hidden="true" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
                       <Flag code={data.countryCode} />
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold text-foreground">
                         {data.country}
                       </h3>
                     </div>
-                    <p className="text-sm text-white/50">
+                    <p className="text-sm text-muted-foreground">
                       {data.city}{data.city && data.regionName ? ", " : ""}{data.regionName}
                     </p>
                   </div>
                 </div>
 
                 <div className="sm:ml-auto glass rounded-xl px-4 py-3 text-center sm:text-right">
-                  <p className="text-xs text-white/40 mb-0.5">IP Address</p>
-                  <p className="text-base font-mono font-semibold text-white break-all">
+                  <p className="text-xs text-muted-foreground mb-0.5">IP Address</p>
+                  <p className="text-base font-mono font-semibold text-foreground break-all tabular-nums">
                     {data.ip}
                   </p>
                 </div>
               </div>
 
-              <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <MapPin className="w-3 h-3" />
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <MapPin className="w-3 h-3" aria-hidden="true" />
                 Location
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -160,11 +147,11 @@ export function IpInfoWidget() {
                 </MetricBox>
               </div>
 
-              <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <Wifi className="w-3 h-3" />
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <Wifi className="w-3 h-3" aria-hidden="true" />
                 Network
               </h4>
-              <Card className="!bg-white/[0.02] !backdrop-blur-none !border-white/5">
+              <Card className="!bg-foreground/[0.02] !backdrop-blur-none !border-border">
                 <CardContent className="p-4">
                   <InfoRow label="ISP" value={data.isp} />
                   <InfoRow label="Organization" value={data.org} />
@@ -173,8 +160,8 @@ export function IpInfoWidget() {
                 </CardContent>
               </Card>
 
-              <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mt-6 mb-3 flex items-center gap-1.5">
-                <Shield className="w-3 h-3" />
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-6 mb-3 flex items-center gap-1.5">
+                <Shield className="w-3 h-3" aria-hidden="true" />
                 Security
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -191,7 +178,7 @@ export function IpInfoWidget() {
             </CardContent>
           </Card>
 
-          <p className="text-xs text-white/30 text-center">
+          <p className="text-xs text-muted-foreground/70 text-center">
             Powered by ipwho.is (free, no API key needed)
           </p>
         </>
@@ -200,7 +187,7 @@ export function IpInfoWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <Shield className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <Shield className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
             <p className="text-muted-foreground text-sm">
               Your IP info will load automatically — or search any IP or domain
             </p>

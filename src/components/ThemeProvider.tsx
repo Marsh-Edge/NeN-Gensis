@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react"
@@ -38,6 +39,12 @@ function getServerSnapshot(): Theme {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+
+  useEffect(() => {
+    document.documentElement.style.colorScheme = theme
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    if (meta) meta.content = theme === "dark" ? "#0f0c29" : "#f0f4f8"
+  }, [theme])
 
   const toggle = useCallback(() => {
     const next: Theme = getSnapshot() === "dark" ? "light" : "dark"

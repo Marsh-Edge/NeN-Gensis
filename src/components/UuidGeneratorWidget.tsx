@@ -42,19 +42,19 @@ export function UuidGeneratorWidget() {
     <div className="space-y-6">
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
             <Button onClick={handleGenerate} size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" /> Generate
+              <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" /> Generate
             </Button>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-white/40">Count:</span>
+              <span className="text-xs text-muted-foreground">Count:</span>
               {[1, 5, 10].map((n) => (
                 <button
                   key={n}
                   onClick={() => setCount(n)}
                   aria-pressed={count === n}
                   aria-label={`Generate ${n} UUID${n > 1 ? "s" : ""}`}
-                  className={`text-xs px-2 py-0.5 rounded ${count === n ? "bg-white/15 text-white" : "text-white/40 hover:text-white/70"}`}
+                  className={`text-xs px-2 py-0.5 rounded transition-colors ${count === n ? "bg-foreground/15 text-foreground" : "text-muted-foreground hover:text-foreground/70"}`}
                 >
                   {n}
                 </button>
@@ -65,7 +65,7 @@ export function UuidGeneratorWidget() {
           <div className="space-y-2">
             {uuids.map((id) => (
               <div key={id} className="glass rounded-lg p-3 flex items-center justify-between gap-3">
-                <code className="text-sm font-mono text-white/80 break-all select-all">{id}</code>
+                <code className="text-sm font-mono text-foreground/80 break-all select-all">{id}</code>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -73,17 +73,23 @@ export function UuidGeneratorWidget() {
                   onClick={() => handleCopy(id)}
                   aria-label={copiedId === id ? "Copied" : `Copy UUID ${id}`}
                 >
-                  {copiedId === id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-white/40" />}
+                  {copiedId === id
+                    ? <Check className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
+                    : <Copy className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />}
                 </Button>
               </div>
             ))}
           </div>
+
+          <p role="status" aria-live="polite" className="sr-only">
+            {copiedId ? "UUID copied to clipboard" : ""}
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="p-4">
-          <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">UUID v4 Format</h4>
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">UUID v4 Format</h3>
           <div className="flex flex-wrap gap-2">
             <Badge variant="glass" className="text-[10px] font-mono">xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx</Badge>
             <Badge variant="glass" className="text-[10px]">122 random bits</Badge>

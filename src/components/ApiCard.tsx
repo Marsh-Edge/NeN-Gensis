@@ -12,33 +12,45 @@ export function ApiCard({ tool }: ApiCardProps) {
   const isDisabled = tool.status === "coming-soon"
   const category = getCategory(tool.categorySlug)
 
+  const card = (
+    <Card
+      className={`glass-hover h-full overflow-hidden ${
+        isDisabled ? "opacity-60" : "group cursor-pointer"
+      }`}
+    >
+      {category && (
+        <div className={`h-1 w-full bg-gradient-to-r ${category.accent}`} />
+      )}
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between mb-3 gap-3">
+          <h2 className="text-base font-semibold text-foreground transition-colors duration-300 group-hover:text-primary">
+            {tool.name}
+          </h2>
+          <Badge
+            variant={isDisabled ? "glass" : "success"}
+            className="text-[10px] shrink-0"
+          >
+            {isDisabled ? "Coming Soon" : "Active"}
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {tool.description}
+        </p>
+      </CardContent>
+    </Card>
+  )
+
+  if (isDisabled) {
+    return (
+      <div aria-disabled="true" className="block">
+        {card}
+      </div>
+    )
+  }
+
   return (
-    <Link href={isDisabled ? "#" : `/tools/${tool.slug}`}>
-      <Card
-        className={`glass-hover group cursor-pointer h-full overflow-hidden ${
-          isDisabled ? "opacity-50 pointer-events-none" : ""
-        }`}
-      >
-        {category && (
-          <div className={`h-1 w-full bg-gradient-to-r ${category.accent}`} />
-        )}
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-3">
-            <h3 className="text-base font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300">
-              {tool.name}
-            </h3>
-            <Badge
-              variant={isDisabled ? "glass" : "success"}
-              className="text-[10px]"
-            >
-              {isDisabled ? "Coming Soon" : "Active"}
-            </Badge>
-          </div>
-          <p className="text-sm text-white/50 leading-relaxed">
-            {tool.description}
-          </p>
-        </CardContent>
-      </Card>
+    <Link href={`/tools/${tool.slug}`} className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      {card}
     </Link>
   )
 }

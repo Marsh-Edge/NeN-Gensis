@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Copy, Check, RefreshCw } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useUrlParam } from "@/lib/useUrlParam"
 
 function hexToRgb(hex: string) {
   const m = hex.replace("#", "").match(/^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/)
@@ -59,10 +60,11 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       onClick={async () => {
         try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch { /* */ }
       }}
-      className="text-[10px] text-white/30 hover:text-white/60 flex items-center gap-1 transition-colors"
+      className="text-[10px] text-muted-foreground hover:text-foreground/60 flex items-center gap-1 transition-colors"
     >
-      {copied ? <Check className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
+      {copied ? <Check className="w-2.5 h-2.5" aria-hidden="true" /> : <Copy className="w-2.5 h-2.5" aria-hidden="true" />}
       {label}
+      <span role="status" aria-live="polite" className="sr-only">{copied ? "Copied" : ""}</span>
     </button>
   )
 }
@@ -72,42 +74,54 @@ function randomHex(): string {
 }
 
 export function ColorToolsWidget() {
-  const [hex, setHex] = useState("#6366f1")
+  const { value: initial, set: setUrl } = useUrlParam("color")
+  const [hex, setHex] = useState(() => {
+    const value = initial.startsWith("#") ? initial : initial ? `#${initial}` : ""
+    return isValidHex(value) ? value : "#6366f1"
+  })
   const valid = isValidHex(hex)
   const rgb = valid ? hexToRgb(hex) : null
   const hsl = rgb ? rgbToHsl(rgb.r, rgb.g, rgb.b) : null
   const palette = valid ? generatePalette(hex) : []
 
+  function update(next: string) {
+    setHex(next)
+    if (isValidHex(next)) setUrl(next)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex gap-2 sm:gap-3 items-end">
         <div className="flex-1">
-          <label htmlFor="color-hex" className="text-xs text-white/40 mb-1 block">HEX Color</label>
+          <label htmlFor="color-hex" className="text-xs text-muted-foreground mb-1 block">HEX Color</label>
           <Input
             id="color-hex"
+            name="color"
             value={hex}
-            onChange={(e) => setHex(e.target.value)}
+            onChange={(e) => update(e.target.value)}
             placeholder="#6366f1"
+            autoComplete="off"
+            spellCheck={false}
             className="font-mono"
           />
         </div>
         <button
           type="button"
-          onClick={() => setHex(randomHex())}
+          onClick={() => update(randomHex())}
           aria-label="Random color"
-          className="glass rounded-lg p-2.5 hover:bg-white/10 transition-colors"
+          className="glass rounded-lg p-2.5 hover:bg-foreground/10 transition-colors"
         >
-          <RefreshCw className="w-4 h-4 text-white/60" />
+          <RefreshCw className="w-4 h-4 text-foreground/60" aria-hidden="true" />
         </button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
           <CardContent className="p-4">
-            <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Preview</h4>
-            <div className="w-full h-32 rounded-xl border border-white/10" style={{ backgroundColor: valid ? hex : "#1a1a2e" }} />
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Preview</h3>
+            <div className="w-full h-32 rounded-xl border border-border" style={{ backgroundColor: valid ? hex : "transparent" }} />
             <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-white/60 font-mono">{valid ? hex : "Invalid"}</span>
+              <span className="text-xs text-foreground/60 font-mono">{valid ? hex : "Invalid"}</span>
               {valid && <CopyButton text={hex} label="Copy HEX" />}
             </div>
           </CardContent>
@@ -115,21 +129,21 @@ export function ColorToolsWidget() {
 
         <Card>
           <CardContent className="p-4">
-            <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Conversions</h4>
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Conversions</h3>
             <div className="space-y-2">
               {rgb && (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/40">RGB</span>
-                  <span className="text-xs text-white/80 font-mono">{rgb.r}, {rgb.g}, {rgb.b}</span>
+                  <span className="text-xs text-muted-foreground">RGB</span>
+                  <span className="text-xs text-foreground/80 font-mono tabular-nums">{rgb.r}, {rgb.g}, {rgb.b}</span>
                 </div>
               )}
               {hsl && (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/40">HSL</span>
-                  <span className="text-xs text-white/80 font-mono">{hsl.h}°, {hsl.s}%, {hsl.l}%</span>
+                  <span className="text-xs text-muted-foreground">HSL</span>
+                  <span className="text-xs text-foreground/80 font-mono tabular-nums">{hsl.h}°, {hsl.s}%, {hsl.l}%</span>
                 </div>
               )}
-              {!rgb && <p className="text-xs text-red-400">Invalid hex color</p>}
+              {!rgb && <p className="text-xs text-red-500 dark:text-red-400">Invalid hex color</p>}
             </div>
           </CardContent>
         </Card>
@@ -138,7 +152,7 @@ export function ColorToolsWidget() {
       {palette.length > 0 && (
         <Card>
           <CardContent className="p-4">
-            <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Tinted Palette</h4>
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Tinted Palette</h3>
             <div className="flex gap-1 rounded-xl overflow-hidden h-12">
               {palette.map((c) => (
                 <button
@@ -147,7 +161,7 @@ export function ColorToolsWidget() {
                   aria-label={`Use color ${c}`}
                   className="flex-1 relative group cursor-pointer"
                   style={{ backgroundColor: c }}
-                  onClick={() => setHex(c)}
+                  onClick={() => update(c)}
                 >
                   <span className="absolute inset-0 flex items-center justify-center text-[9px] font-mono text-white/0 group-hover:text-white/80 transition-colors" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
                     {c}
@@ -159,7 +173,7 @@ export function ColorToolsWidget() {
         </Card>
       )}
 
-      <p className="text-xs text-white/30 text-center">Client-side color utilities — no external API needed</p>
+      <p className="text-xs text-muted-foreground/70 text-center">Client-side color utilities — no external API needed</p>
     </div>
   )
 }

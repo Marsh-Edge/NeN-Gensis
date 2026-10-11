@@ -1,22 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Search, Shield, Clock, Globe, FileSearch } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorState } from "@/components/widgets/shared"
+import { useUrlParam } from "@/lib/useUrlParam"
 import type { HeaderCheckData } from "@/lib/types"
 
 export function HeaderCheckWidget() {
-  const [url, setUrl] = useState("")
+  const { value: initial, set: setUrl } = useUrlParam("url")
+  const [url, setUrl_] = useState(initial)
   const [data, setData] = useState<HeaderCheckData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const lastQuery = useRef("")
+  const ranRef = useRef(false)
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!url.trim()) return
+  async function run(raw: string) {
+    const value = raw.trim()
+    if (!value) return
+    lastQuery.current = value
 
     setLoading(true)
     setError("")
@@ -26,7 +32,7 @@ export function HeaderCheckWidget() {
       const res = await fetch("/api/header-check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: value }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -41,28 +47,42 @@ export function HeaderCheckWidget() {
     }
   }
 
+  useEffect(() => {
+    if (!ranRef.current) {
+      ranRef.current = true
+      run(initial)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    setUrl(url.trim())
+    run(url)
+  }
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSearch} className="flex gap-3">
         <Input
+          name="url"
+          autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="search"
+          inputMode="url"
           placeholder="example.com or https://example.com/page"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e) => setUrl_(e.target.value)}
+          aria-label="URL to inspect"
           className="flex-1"
         />
         <Button type="submit" disabled={loading || !url.trim()}>
-          <Search className="h-4 w-4 mr-2" />
+          <Search className="h-4 w-4 mr-2" aria-hidden="true" />
           Inspect
         </Button>
       </form>
 
-      {error && (
-        <Card>
-          <CardContent className="p-4 text-sm text-red-400">
-            {error}
-          </CardContent>
-        </Card>
-      )}
+      {error && <ErrorState message={error} onRetry={() => run(lastQuery.current)} />}
 
       {loading && (
         <div className="space-y-4">
@@ -72,31 +92,31 @@ export function HeaderCheckWidget() {
       )}
 
       {!loading && data && (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-fade-in-up">
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-red-600 flex items-center justify-center text-lg shadow-lg">
-                    <Globe className="w-5 h-5 text-white" />
+                    <Globe className="w-5 h-5 text-white" aria-hidden="true" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base font-semibold text-white truncate">
+                    <h3 className="text-base font-semibold text-foreground truncate">
                       {data.url}
                     </h3>
-                    <p className="text-xs text-white/40 truncate">
+                    <p className="text-xs text-muted-foreground truncate tabular-nums">
                       {data.statusCode} {data.statusText}
                     </p>
                   </div>
                 </div>
-                <div className="sm:ml-auto flex items-center gap-3 text-xs text-white/40 shrink-0">
+                <div className="sm:ml-auto flex items-center gap-3 text-xs text-muted-foreground shrink-0">
                   <span className="flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
+                    <Shield className="w-3 h-3" aria-hidden="true" />
                     {data.headers.filter((h) => h.security).length} security headers
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {data.duration}ms
+                    <Clock className="w-3 h-3" aria-hidden="true" />
+                    <span className="tabular-nums">{data.duration}ms</span>
                   </span>
                 </div>
               </div>
@@ -109,19 +129,19 @@ export function HeaderCheckWidget() {
                 {data.headers.map((h, i) => (
                   <div
                     key={i}
-                    className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-2.5 border-b border-white/5 last:border-0"
+                    className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-2.5 border-b border-border last:border-0"
                   >
                     <div className="flex items-center gap-2 min-w-0 sm:w-64 shrink-0">
                       {h.security && (
-                        <Shield className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <Shield className="w-3 h-3 text-emerald-500 shrink-0" aria-hidden="true" />
                       )}
                       <span className={`text-xs font-mono font-medium truncate ${
-                        h.security ? "text-emerald-300" : "text-white/50"
+                        h.security ? "text-emerald-600 dark:text-emerald-300" : "text-muted-foreground"
                       }`}>
                         {h.key}
                       </span>
                     </div>
-                    <span className="text-xs font-mono text-white/70 break-all min-w-0 flex-1">
+                    <span className="text-xs font-mono text-foreground/70 break-all min-w-0 flex-1">
                       {h.value}
                     </span>
                   </div>
@@ -129,7 +149,7 @@ export function HeaderCheckWidget() {
               </div>
 
               {data.headers.length === 0 && (
-                <p className="text-center text-white/40 text-sm py-4">
+                <p className="text-center text-muted-foreground text-sm py-4">
                   No headers returned
                 </p>
               )}
@@ -141,7 +161,7 @@ export function HeaderCheckWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <FileSearch className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <FileSearch className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
             <p className="text-muted-foreground text-sm">
               Enter a URL to inspect its HTTP response headers
             </p>

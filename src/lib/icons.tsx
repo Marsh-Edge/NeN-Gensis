@@ -8,6 +8,7 @@ import {
   DollarSign,
   type LucideIcon,
 } from "lucide-react"
+import type { SVGProps } from "react"
 import { cn } from "./utils"
 
 const categoryIconMap: Record<string, LucideIcon> = {
@@ -41,24 +42,32 @@ const toolIconMap: Record<string, LucideIcon> = {
   "currency-converter": DollarSign,
 }
 
-export function CategoryIcon({ slug, className }: { slug: string; className?: string }) {
+export function CategoryIcon({
+  slug,
+  className,
+  ...props
+}: { slug: string; className?: string } & SVGProps<SVGSVGElement>) {
   const Icon = categoryIconMap[slug]
   if (!Icon) return null
-  return <Icon className={cn("w-5 h-5", className)} />
+  return <Icon className={cn("w-5 h-5", className)} {...props} />
 }
 
-export function ToolIcon({ slug, className }: { slug: string; className?: string }) {
+export function ToolIcon({
+  slug,
+  className,
+  ...props
+}: { slug: string; className?: string } & SVGProps<SVGSVGElement>) {
   const Icon = toolIconMap[slug]
   if (!Icon) return null
-  return <Icon className={cn("w-5 h-5", className)} />
+  return <Icon className={cn("w-5 h-5", className)} {...props} />
 }
 
 export function IconBox({ slug, className }: { slug: string; className?: string }) {
   const Icon = toolIconMap[slug] ?? categoryIconMap[slug]
   if (!Icon) return null
   return (
-    <div className={cn("w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center", className)}>
-      <Icon className="w-5 h-5 text-white/80" />
+    <div className={cn("w-10 h-10 rounded-xl bg-foreground/10 flex items-center justify-center", className)}>
+      <Icon className="w-5 h-5 text-foreground/80" aria-hidden="true" />
     </div>
   )
 }

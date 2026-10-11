@@ -67,7 +67,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="sm:ml-auto"
           >
-            <Badge variant="glass" className="text-xs cursor-pointer hover:bg-white/10 transition-colors">
+            <Badge variant="glass" className="text-xs cursor-pointer hover:bg-foreground/10 transition-colors">
               @Marsh-Edge
             </Badge>
           </a>

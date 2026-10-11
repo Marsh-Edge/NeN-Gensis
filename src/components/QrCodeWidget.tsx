@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorState } from "@/components/widgets/shared"
+import { useUrlParam } from "@/lib/useUrlParam"
 
 export function QrCodeWidget() {
-  const [text, setText] = useState("")
+  const { value: initial, set: setUrl } = useUrlParam("data")
+  const [text, setText] = useState(initial)
   const [qrUrl, setQrUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const urlRef = useRef("")
+  const lastQuery = useRef("")
+  const ranRef = useRef(false)
 
   useEffect(() => {
     return () => {
@@ -20,9 +25,10 @@ export function QrCodeWidget() {
     }
   }, [])
 
-  async function handleGenerate(e: React.FormEvent) {
-    e.preventDefault()
-    if (!text.trim()) return
+  async function run(raw: string) {
+    const value = raw.trim()
+    if (!value) return
+    lastQuery.current = value
 
     setLoading(true)
     setError("")
@@ -36,7 +42,7 @@ export function QrCodeWidget() {
       const res = await fetch("/api/qr-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: text.trim(), size: 250 }),
+        body: JSON.stringify({ data: value, size: 250 }),
       })
 
       if (!res.ok) {
@@ -56,6 +62,20 @@ export function QrCodeWidget() {
     }
   }
 
+  useEffect(() => {
+    if (!ranRef.current) {
+      ranRef.current = true
+      run(initial)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleGenerate(e: React.FormEvent) {
+    e.preventDefault()
+    setUrl(text.trim())
+    run(text)
+  }
+
   function handleDownload() {
     if (!qrUrl) return
     const a = document.createElement("a")
@@ -68,7 +88,11 @@ export function QrCodeWidget() {
     <div className="space-y-6">
       <form onSubmit={handleGenerate} className="flex gap-3">
         <Input
-          placeholder="Enter text or URL..."
+          name="data"
+          autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="go"
+          placeholder="Enter text or URL…"
           value={text}
           onChange={(e) => setText(e.target.value)}
           aria-label="Text or URL to encode"
@@ -79,13 +103,7 @@ export function QrCodeWidget() {
         </Button>
       </form>
 
-      {error && (
-        <Card>
-          <CardContent className="p-4 text-sm text-red-400">
-            {error}
-          </CardContent>
-        </Card>
-      )}
+      {error && <ErrorState message={error} onRetry={() => run(lastQuery.current)} />}
 
       {loading && (
         <div className="flex justify-center">
@@ -94,7 +112,7 @@ export function QrCodeWidget() {
       )}
 
       {!loading && qrUrl && (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 animate-fade-in-up">
           <Card className="p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -107,7 +125,7 @@ export function QrCodeWidget() {
             />
           </Card>
           <Button variant="outline" onClick={handleDownload}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Download PNG
           </Button>
         </div>
@@ -116,7 +134,7 @@ export function QrCodeWidget() {
       {!loading && !qrUrl && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <QrCode className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <QrCode className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
             <p className="text-muted-foreground text-sm">
               Enter text or a URL to generate a QR code
             </p>

@@ -7,7 +7,7 @@ export default function AboutPage() {
     <div className="space-y-8">
       <Link href="/">
         <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4 mr-1" />
+          <ArrowLeft className="h-4 w-4 mr-1" aria-hidden="true" />
           Back
         </Button>
       </Link>
@@ -49,16 +49,16 @@ export default function AboutPage() {
             href="https://github.com/Marsh-Edge"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-foreground hover:bg-white/10 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-foreground hover:bg-foreground/10 transition-colors"
           >
-            <GitBranch className="w-4 h-4" />
+            <GitBranch className="w-4 h-4" aria-hidden="true" />
             @Marsh-Edge on GitHub
           </a>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-foreground hover:bg-white/10 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-foreground hover:bg-foreground/10 transition-colors"
           >
-            <Globe className="w-4 h-4" />
+            <Globe className="w-4 h-4" aria-hidden="true" />
             Browse APIs
           </Link>
         </div>

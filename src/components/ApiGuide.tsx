@@ -34,17 +34,17 @@ export function ApiGuide({
         className="w-full flex items-center justify-between p-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Link2 className="w-4 h-4" />
+          <Link2 className="w-4 h-4" aria-hidden="true" />
           <span>{clientSide ? "How It Works" : "API Usage Guide"}</span>
         </div>
-        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        {open ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
       </button>
 
       {open && (
         <div className="px-4 pb-4 space-y-3 text-sm">
           {clientSide ? (
-            <div className="flex items-start gap-2 rounded-xl bg-black/30 p-3 text-xs text-muted-foreground">
-              <MonitorSmartphone className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
+            <div className="flex items-start gap-2 rounded-xl bg-foreground/5 border border-border p-3 text-xs text-muted-foreground">
+              <MonitorSmartphone className="w-4 h-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
               <span>
                 Runs entirely in your browser — your input never leaves this device.
               </span>
@@ -69,7 +69,7 @@ export function ApiGuide({
           {requestBody && (
             <div>
               <span className="text-muted-foreground text-xs">Request Body</span>
-              <pre className="mt-1 p-3 bg-black/30 rounded-xl text-[11px] text-foreground/70 font-mono overflow-x-auto">
+              <pre className="mt-1 p-3 bg-foreground/5 border border-border rounded-xl text-[11px] text-foreground/70 font-mono overflow-x-auto">
                 {requestBody}
               </pre>
             </div>
@@ -80,7 +80,7 @@ export function ApiGuide({
               <span className="text-muted-foreground text-xs">
                 {clientSide ? "Example Output" : "Example Response"}
               </span>
-              <pre className="mt-1 p-3 bg-black/30 rounded-xl text-[11px] text-foreground/70 font-mono overflow-x-auto max-h-60 overflow-y-auto">
+              <pre className="mt-1 p-3 bg-foreground/5 border border-border rounded-xl text-[11px] text-foreground/70 font-mono overflow-x-auto max-h-60 overflow-y-auto">
                 {exampleResponse}
               </pre>
             </div>
@@ -92,7 +92,7 @@ export function ApiGuide({
                 href={sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-xs text-primary hover:text-primary/80 transition-colors"
               >
                 {sourceLabel || "Source"} ↗
               </a>

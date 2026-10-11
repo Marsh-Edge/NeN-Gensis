@@ -1,23 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Search, Globe, MapPin, DollarSign, Users, Flag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Flag as FlagEmoji, InfoRow, MetricBox } from "@/components/widgets/shared"
+import { Flag as FlagEmoji, InfoRow, MetricBox, ErrorState } from "@/components/widgets/shared"
+import { useUrlParam } from "@/lib/useUrlParam"
 import type { CountryData } from "@/lib/types"
 
 export function CountriesWidget() {
-  const [query, setQuery] = useState("")
+  const { value: initial, set: setUrl } = useUrlParam("country")
+  const [query, setQuery] = useState(initial)
   const [data, setData] = useState<CountryData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const lastQuery = useRef("")
+  const ranRef = useRef(false)
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!query.trim()) return
+  async function run(raw: string) {
+    const value = raw.trim()
+    if (!value) return
+    lastQuery.current = value
 
     setLoading(true)
     setError("")
@@ -27,7 +32,7 @@ export function CountriesWidget() {
       const res = await fetch("/api/countries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: query.trim() }),
+        body: JSON.stringify({ country: value }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -42,6 +47,20 @@ export function CountriesWidget() {
     }
   }
 
+  useEffect(() => {
+    if (!ranRef.current) {
+      ranRef.current = true
+      run(initial)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    setUrl(query.trim())
+    run(query)
+  }
+
   function formatPopulation(n: number | null): string {
     if (n === null || n === undefined) return "—"
     if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`
@@ -54,22 +73,23 @@ export function CountriesWidget() {
     <div className="space-y-6">
       <form onSubmit={handleSearch} className="flex gap-2 sm:gap-3">
         <Input
-          placeholder="Enter a country name..."
+          name="country"
+          autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="search"
+          placeholder="Enter a country name…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="Country name"
           className="flex-1 min-w-0"
         />
         <Button type="submit" disabled={loading || !query.trim()}>
-          <Search className="h-4 w-4 mr-2" />
+          <Search className="h-4 w-4 mr-2" aria-hidden="true" />
           Search
         </Button>
       </form>
 
-      {error && (
-        <Card>
-          <CardContent className="p-4 text-sm text-red-400">{error}</CardContent>
-        </Card>
-      )}
+      {error && <ErrorState message={error} onRetry={() => run(lastQuery.current)} />}
 
       {loading && (
         <div className="space-y-4">
@@ -84,7 +104,7 @@ export function CountriesWidget() {
       )}
 
       {!loading && data && (
-        <Card>
+        <Card className="animate-fade-in-up">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex items-center gap-4">
@@ -92,8 +112,8 @@ export function CountriesWidget() {
                   <FlagEmoji code={data.iso2} className="text-4xl" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">{data.name}</h3>
-                  <p className="text-sm text-white/50">
+                  <h3 className="text-xl font-bold text-foreground">{data.name}</h3>
+                  <p className="text-sm text-muted-foreground">
                     {data.iso2}{data.iso3 ? ` / ${data.iso3}` : ""}
                   </p>
                 </div>
@@ -104,7 +124,11 @@ export function CountriesWidget() {
                   <img
                     src={data.flag}
                     alt={`Flag of ${data.name}`}
-                    className="h-16 rounded-lg shadow-md object-cover"
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-16 w-auto rounded-lg shadow-md object-cover"
                   />
                 </div>
               )}
@@ -112,28 +136,28 @@ export function CountriesWidget() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               <MetricBox
-                icon={<MapPin className="w-4 h-4" />}
+                icon={<MapPin className="w-4 h-4" aria-hidden="true" />}
                 label="Capital"
                 value={data.capital}
               />
               <MetricBox
-                icon={<DollarSign className="w-4 h-4" />}
+                icon={<DollarSign className="w-4 h-4" aria-hidden="true" />}
                 label="Currency"
                 value={data.currency}
               />
               <MetricBox
-                icon={<Users className="w-4 h-4" />}
+                icon={<Users className="w-4 h-4" aria-hidden="true" />}
                 label="Population"
                 value={formatPopulation(data.population)}
               />
               <MetricBox
-                icon={<Globe className="w-4 h-4" />}
+                icon={<Globe className="w-4 h-4" aria-hidden="true" />}
                 label="Coordinates"
                 value={data.lat ? `${data.lat.toFixed(1)}, ${data.lng.toFixed(1)}` : "—"}
               />
             </div>
 
-            <Card className="!bg-white/[0.02] !backdrop-blur-none !border-white/5">
+            <Card className="!bg-foreground/[0.02] !backdrop-blur-none !border-border">
               <CardContent className="p-4">
                 <InfoRow label="Official Name" value={data.name} />
                 <InfoRow label="Capital City" value={data.capital} />
@@ -157,15 +181,15 @@ export function CountriesWidget() {
       {!loading && !data && !error && (
         <Card>
           <CardContent className="p-8 text-center">
-            <Flag className="w-10 h-10 mx-auto mb-3 text-white/20" />
-            <p className="text-white/50 text-sm">
+            <Flag className="w-10 h-10 mx-auto mb-3 text-muted-foreground/40" aria-hidden="true" />
+            <p className="text-muted-foreground text-sm">
               Search any country to see its details
             </p>
           </CardContent>
         </Card>
       )}
 
-      <p className="text-xs text-white/30 text-center">
+      <p className="text-xs text-muted-foreground/70 text-center">
         Powered by countriesnow.space (free, no API key needed)
       </p>
     </div>

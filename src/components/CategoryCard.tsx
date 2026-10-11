@@ -15,7 +15,10 @@ export function CategoryCard({ category }: CategoryCardProps) {
   const comingSoon = tools.filter((t) => t.status === "coming-soon")
 
   return (
-    <Link href={`/categories/${category.slug}`}>
+    <Link
+      href={`/categories/${category.slug}`}
+      className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
       <Card className="glass-hover group cursor-pointer h-full overflow-hidden relative">
         <div className={`h-1.5 w-full bg-gradient-to-r ${category.accent}`} />
 
@@ -29,9 +32,9 @@ export function CategoryCard({ category }: CategoryCardProps) {
             </Badge>
           </div>
 
-          <h3 className="text-lg font-semibold text-foreground mb-1">
+          <h2 className="text-lg font-semibold text-foreground mb-1">
             {category.name}
-          </h3>
+          </h2>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             {category.description}
           </p>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import "./globals.css"
 import { Sidebar } from "@/components/Sidebar"
@@ -6,9 +6,17 @@ import { TopBar } from "@/components/TopBar"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import { ClickGlow } from "@/components/ClickGlow"
 
-const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="light"?"light":"dark";document.documentElement.classList.toggle("dark",d==="dark");}catch(e){document.documentElement.classList.add("dark");}})();`
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="light"?"light":"dark";document.documentElement.classList.toggle("dark",d==="dark");document.documentElement.style.colorScheme=d;}catch(e){document.documentElement.classList.add("dark");document.documentElement.style.colorScheme="dark";}})();`
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+
+export const viewport: Viewport = {
+  colorScheme: "dark light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f0f4f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0c29" },
+  ],
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -68,7 +76,10 @@ export default function RootLayout({
           </a>
           <Sidebar />
           <TopBar />
-          <main id="main-content" className="lg:pl-64 pt-14 lg:pt-0 min-h-screen animate-fade-in-up">
+          <main
+            id="main-content"
+            className="lg:pl-64 pt-[calc(3.5rem+env(safe-area-inset-top))] lg:pt-0 min-h-screen animate-fade-in-up"
+          >
             <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
               {children}
             </div>

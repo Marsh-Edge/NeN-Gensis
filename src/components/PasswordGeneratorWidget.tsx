@@ -31,16 +31,16 @@ function generatePassword(length: number, opts: { upper: boolean; lower: boolean
   return result
 }
 
-function getStrength(length: number, opts: { upper: boolean; lower: boolean; numbers: boolean; symbols: boolean }): { label: string; color: string; variant: "destructive" | "glass" | "success" } {
+function getStrength(length: number, opts: { upper: boolean; lower: boolean; numbers: boolean; symbols: boolean }): { label: string; variant: "destructive" | "glass" | "success" } {
   let size = 0
   if (opts.upper) size += 26
   if (opts.lower) size += 26
   if (opts.numbers) size += 10
   if (opts.symbols) size += 24
   const entropy = length * Math.log2(size || 1)
-  if (entropy < 45) return { label: "Weak", color: "text-red-400", variant: "destructive" }
-  if (entropy < 75) return { label: "Moderate", color: "text-yellow-400", variant: "glass" }
-  return { label: "Strong", color: "text-green-400", variant: "success" }
+  if (entropy < 45) return { label: "Weak", variant: "destructive" }
+  if (entropy < 75) return { label: "Moderate", variant: "glass" }
+  return { label: "Strong", variant: "success" }
 }
 
 export function PasswordGeneratorWidget() {
@@ -76,21 +76,22 @@ export function PasswordGeneratorWidget() {
         <CardContent className="p-6 space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label htmlFor="password-length" className="text-sm text-white/70">Password Length: {length}</label>
+              <label htmlFor="password-length" className="text-sm text-foreground/70">Password Length: {length}</label>
               <Badge variant={strength.variant} className="text-xs">
                 {strength.label}
               </Badge>
             </div>
             <input
               id="password-length"
+              name="password-length"
               type="range"
               min={6}
               max={64}
               value={length}
               onChange={(e) => setLength(parseInt(e.target.value))}
-              className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-purple-500"
+              className="w-full h-2 rounded-full appearance-none cursor-pointer bg-foreground/10 accent-purple-500"
             />
-            <div className="flex justify-between text-xs text-white/30">
+            <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
               <span>6</span>
               <span>64</span>
             </div>
@@ -109,14 +110,14 @@ export function PasswordGeneratorWidget() {
                 onClick={() => toggle(key)}
                 aria-pressed={opts[key]}
                 aria-label={`Toggle ${desc}`}
-                className={`glass rounded-xl p-3 text-center transition-all duration-200 ${
+                className={`glass rounded-xl p-3 text-center transition-colors duration-200 ${
                   opts[key]
                     ? "border-purple-500/40 bg-purple-500/10"
                     : "opacity-40 hover:opacity-70"
                 }`}
               >
-                <p className="text-sm font-semibold text-white">{label}</p>
-                <p className="text-[10px] text-white/40">{desc}</p>
+                <p className="text-sm font-semibold text-foreground">{label}</p>
+                <p className="text-[10px] text-muted-foreground">{desc}</p>
               </button>
             ))}
           </div>
@@ -126,14 +127,14 @@ export function PasswordGeneratorWidget() {
             className="w-full"
             disabled={allDisabled}
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
             Generate Password
           </Button>
         </CardContent>
       </Card>
 
       {password && (
-        <Card>
+        <Card className="animate-fade-in-up">
           <CardContent className="p-6 space-y-4">
             <div className="flex gap-2">
               <Input
@@ -143,19 +144,19 @@ export function PasswordGeneratorWidget() {
                 className="flex-1 text-base font-mono tracking-wider text-center"
               />
               <Button variant="outline" size="icon" onClick={copyToClipboard} title="Copy to clipboard" aria-label="Copy password">
-                <Copy className="h-4 w-4" />
+                <Copy className="h-4 w-4" aria-hidden="true" />
               </Button>
               <Button variant="outline" size="icon" onClick={generate} title="Regenerate" aria-label="Regenerate password">
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
 
             {copied && (
-              <p role="status" className="text-xs text-green-400 text-center">Copied to clipboard!</p>
+              <p role="status" aria-live="polite" className="text-xs text-green-500 text-center">Copied to clipboard!</p>
             )}
 
-            <div className="flex flex-wrap gap-4 text-xs text-white/40 justify-center">
-              <span>{length} characters</span>
+            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground justify-center">
+              <span className="tabular-nums">{length} characters</span>
               <span>
                 {[
                   opts.upper && "A-Z",
@@ -172,7 +173,7 @@ export function PasswordGeneratorWidget() {
       {!password && (
         <Card>
           <CardContent className="p-8 text-center">
-            <KeyRound className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <KeyRound className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
             <p className="text-muted-foreground text-sm">
               Configure your preferences and generate a secure password
             </p>

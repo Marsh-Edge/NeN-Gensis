@@ -28,6 +28,7 @@
 
 /* ── LIGHT THEME ── */
 :root {
+  color-scheme: light;
   --background: 210 40% 96%;
   --foreground: 222 47% 11%;
   --card: 0 0% 100%;
@@ -51,6 +52,7 @@
 
 /* ── DARK THEME ── */
 .dark {
+  color-scheme: dark;
   --background: 224 71% 4%;
   --foreground: 213 31% 91%;
   --card: 224 71% 4%;
@@ -74,12 +76,27 @@
 
 * { border-color: hsl(var(--border)); }
 
+/* ── BASE ── */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+label,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
+}
+
 /* ── BODY ── */
 body {
   background: #f0f4f8;
   background-attachment: fixed;
   color: hsl(var(--foreground));
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark body {
@@ -93,7 +110,7 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dark .glass {
@@ -108,7 +125,7 @@ body {
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dark .glass-strong {
@@ -118,7 +135,7 @@ body {
 }
 
 .glass-hover {
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .glass-hover:hover {

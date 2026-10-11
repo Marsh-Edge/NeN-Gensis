@@ -1,19 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Rocket, Satellite } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { ErrorState } from "@/components/widgets/shared"
 import type { SpaceData } from "@/lib/types"
 
 const craftColors: Record<string, string> = {
-  ISS: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  Tiangong: "bg-red-500/20 text-red-300 border-red-500/30",
+  ISS: "bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500/30",
+  Tiangong: "bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/30",
 }
 
 function CraftBadge({ craft }: { craft: string }) {
-  const colors = craftColors[craft] ?? "bg-white/10 text-white/60 border-white/10"
+  const colors = craftColors[craft] ?? "bg-foreground/10 text-muted-foreground border-border"
   return (
     <span className={`text-[10px] px-2 py-0.5 rounded-full border ${colors}`}>
       {craft}
@@ -25,24 +26,31 @@ export function SpaceWidget() {
   const [data, setData] = useState<SpaceData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const ranRef = useRef(false)
+
+  async function load() {
+    setLoading(true)
+    setError("")
+    try {
+      const res = await fetch("/api/space")
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json.error ?? "Failed to fetch")
+        return
+      }
+      setData(json)
+    } catch {
+      setError("Failed to fetch space data")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch("/api/space")
-        const json = await res.json()
-        if (!res.ok) {
-          setError(json.error ?? "Failed to fetch")
-          return
-        }
-        setData(json)
-      } catch {
-        setError("Failed to fetch space data")
-      } finally {
-        setLoading(false)
-      }
+    if (!ranRef.current) {
+      ranRef.current = true
+      load()
     }
-    fetchData()
   }, [])
 
   if (loading) {
@@ -54,11 +62,7 @@ export function SpaceWidget() {
   }
 
   if (error) {
-    return (
-      <Card>
-        <CardContent className="p-4 text-sm text-red-400">{error}</CardContent>
-      </Card>
-    )
+    return <ErrorState message={error} onRetry={load} />
   }
 
   if (!data) return null
@@ -67,11 +71,11 @@ export function SpaceWidget() {
   const tiangong = data.people.filter((p) => p.craft === "Tiangong")
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       <Card>
         <CardContent className="p-6 text-center">
-          <Rocket className="w-12 h-12 mx-auto mb-3 text-cyan-400" />
-          <p className="text-3xl font-bold text-foreground">{data.number}</p>
+          <Rocket className="w-12 h-12 mx-auto mb-3 text-cyan-400" aria-hidden="true" />
+          <p className="text-3xl font-bold text-foreground tabular-nums">{data.number}</p>
           <p className="text-sm text-muted-foreground mt-1">
             people currently in space
           </p>
@@ -82,14 +86,14 @@ export function SpaceWidget() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Satellite className="w-5 h-5 text-blue-400" />
-              <h3 className="font-semibold text-foreground text-sm">International Space Station</h3>
-              <Badge variant="glass" className="ml-auto text-xs">{iss.length}</Badge>
+              <Satellite className="w-5 h-5 text-blue-400" aria-hidden="true" />
+              <h2 className="font-semibold text-foreground text-sm">International Space Station</h2>
+              <Badge variant="glass" className="ml-auto text-xs tabular-nums">{iss.length}</Badge>
             </div>
             <div className="space-y-2">
               {iss.map((person) => (
-                <div key={person.name} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
-                  <span className="text-sm text-white/80">{person.name}</span>
+                <div key={person.name} className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
+                  <span className="text-sm text-foreground/80">{person.name}</span>
                   <CraftBadge craft="ISS" />
                 </div>
               ))}
@@ -100,9 +104,9 @@ export function SpaceWidget() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Satellite className="w-5 h-5 text-red-400" />
-              <h3 className="font-semibold text-foreground text-sm">Tiangong</h3>
-              <Badge variant="glass" className="ml-auto text-xs">{tiangong.length}</Badge>
+              <Satellite className="w-5 h-5 text-red-400" aria-hidden="true" />
+              <h2 className="font-semibold text-foreground text-sm">Tiangong</h2>
+              <Badge variant="glass" className="ml-auto text-xs tabular-nums">{tiangong.length}</Badge>
             </div>
             <div className="space-y-2">
               {tiangong.map((person) => (
@@ -120,7 +124,7 @@ export function SpaceWidget() {
         <p className="text-sm text-muted-foreground text-center">No one is currently in space.</p>
       )}
 
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-xs text-muted-foreground/70 text-center">
         Powered by Open Notify (free, no API key needed)
       </p>
     </div>

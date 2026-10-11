@@ -5,10 +5,10 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
           Categories
         </h1>
-        <p className="text-white/50 text-sm sm:text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Explore all available API categories
         </p>
       </div>
