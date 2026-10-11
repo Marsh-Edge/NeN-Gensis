@@ -18,6 +18,7 @@ export function PlaceholderWidget() {
   async function fetchImage(w: number, h: number) {
     setLoading(true)
     setError("")
+    setData(null)
     try {
       const res = await fetch("/api/placeholder", {
         method: "POST",
@@ -78,6 +79,8 @@ export function PlaceholderWidget() {
             <img
               src={data.url}
               alt={`Placeholder ${data.width}x${data.height}`}
+              loading="lazy"
+              decoding="async"
               className="w-full rounded-lg object-cover"
               style={{ aspectRatio: `${data.width}/${data.height}`, maxHeight: "60vh" }}
             />
@@ -89,6 +92,7 @@ export function PlaceholderWidget() {
                 href={data.downloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Download image"
                 className="glass rounded-lg p-2 hover:bg-white/10 transition-colors"
               >
                 <Download className="w-4 h-4 text-white/60" />

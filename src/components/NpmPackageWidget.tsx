@@ -7,16 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { InfoRow } from "@/components/widgets/shared"
 import type { NpmPackageData } from "@/lib/types"
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-      <span className="text-sm text-white/50">{label}</span>
-      <span className="text-sm text-white/80 font-medium text-right truncate max-w-[60%]">{value || "—"}</span>
-    </div>
-  )
-}
 
 export function NpmPackageWidget() {
   const [query, setQuery] = useState("")

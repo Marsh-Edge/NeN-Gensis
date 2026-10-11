@@ -115,6 +115,7 @@ export function CurrencyConverterWidget() {
     setFrom(to)
     setTo(from)
     setData(null)
+    setError("")
   }
 
   return (

@@ -229,16 +229,16 @@ All tools are backed by server-side Next.js API routes. Most endpoints accept a 
 | `/api/dns-lookup` | `POST` | `{ domain, type }` | DNS record resolution |
 | `/api/ip-info` | `POST` | `{ ip }` | IP geolocation data |
 | `/api/header-check` | `POST` | `{ url }` | HTTP response headers |
-| `/api/countries` | `POST` | `{ search }` | Country information |
+| `/api/countries` | `POST` | `{ country }` | Country information |
 | `/api/universities` | `POST` | `{ name, country? }` | University search |
-| `/api/books` | `POST` | `{ q }` | Book search via Open Library |
+| `/api/books` | `POST` | `{ query }` | Book search via Open Library |
 | `/api/space` | `GET` | — | People currently in space |
 | `/api/currency` | `POST` | `{ amount, from, to }` | Currency conversion via ECB rates |
 | `/api/currency` | `GET` | — | Supported currency list |
 | `/api/github-profile` | `POST` | `{ username }` | GitHub profile and repos |
-| `/api/npm-package` | `POST` | `{ name }` | npm package metadata |
-| `/api/pypi-package` | `POST` | `{ name }` | PyPI package metadata |
-| `/api/qr-code` | `POST` | `{ text, size? }` | QR code image generation |
+| `/api/npm-package` | `POST` | `{ package }` | npm package metadata |
+| `/api/pypi-package` | `POST` | `{ package }` | PyPI package metadata |
+| `/api/qr-code` | `POST` | `{ data, size? }` | QR code image generation |
 | `/api/placeholder` | `POST` | `{ width, height }` | Placeholder image URL |
 | `/api/avatar` | `POST` | `{ seed, style? }` | DiceBear avatar SVG |
 | `/api/random-animal` | `POST` | `{ type }` | Random cat or fox image |

@@ -21,21 +21,25 @@ function generatePassword(length: number, opts: { upper: boolean; lower: boolean
 
   if (!chars) return ""
 
-  const array = new Uint32Array(length)
-  crypto.getRandomValues(array)
-
+  const limit = Math.floor(0xffffffff / chars.length) * chars.length
+  const buffer = new Uint32Array(1)
   let result = ""
-  for (let i = 0; i < length; i++) {
-    result += chars[array[i] % chars.length]
+  while (result.length < length) {
+    crypto.getRandomValues(buffer)
+    if (buffer[0] < limit) result += chars[buffer[0] % chars.length]
   }
   return result
 }
 
 function getStrength(length: number, opts: { upper: boolean; lower: boolean; numbers: boolean; symbols: boolean }): { label: string; color: string; variant: "destructive" | "glass" | "success" } {
-  const types = [opts.upper, opts.lower, opts.numbers, opts.symbols].filter(Boolean).length
-  const score = length * types
-  if (score < 20) return { label: "Weak", color: "text-red-400", variant: "destructive" }
-  if (score < 40) return { label: "Moderate", color: "text-yellow-400", variant: "glass" }
+  let size = 0
+  if (opts.upper) size += 26
+  if (opts.lower) size += 26
+  if (opts.numbers) size += 10
+  if (opts.symbols) size += 24
+  const entropy = length * Math.log2(size || 1)
+  if (entropy < 45) return { label: "Weak", color: "text-red-400", variant: "destructive" }
+  if (entropy < 75) return { label: "Moderate", color: "text-yellow-400", variant: "glass" }
   return { label: "Strong", color: "text-green-400", variant: "success" }
 }
 
@@ -103,6 +107,8 @@ export function PasswordGeneratorWidget() {
                 key={key}
                 type="button"
                 onClick={() => toggle(key)}
+                aria-pressed={opts[key]}
+                aria-label={`Toggle ${desc}`}
                 className={`glass rounded-xl p-3 text-center transition-all duration-200 ${
                   opts[key]
                     ? "border-purple-500/40 bg-purple-500/10"
@@ -133,18 +139,19 @@ export function PasswordGeneratorWidget() {
               <Input
                 readOnly
                 value={password}
+                aria-label="Generated password"
                 className="flex-1 text-base font-mono tracking-wider text-center"
               />
-              <Button variant="outline" size="icon" onClick={copyToClipboard} title="Copy to clipboard">
+              <Button variant="outline" size="icon" onClick={copyToClipboard} title="Copy to clipboard" aria-label="Copy password">
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" onClick={generate} title="Regenerate">
+              <Button variant="outline" size="icon" onClick={generate} title="Regenerate" aria-label="Regenerate password">
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
 
             {copied && (
-              <p className="text-xs text-green-400 text-center">Copied to clipboard!</p>
+              <p role="status" className="text-xs text-green-400 text-center">Copied to clipboard!</p>
             )}
 
             <div className="flex flex-wrap gap-4 text-xs text-white/40 justify-center">

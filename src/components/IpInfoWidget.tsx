@@ -7,35 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { Flag, InfoRow, MetricBox } from "@/components/widgets/shared"
 import type { IpInfoData } from "@/lib/types"
-
-function Flag({ code }: { code: string }) {
-  if (!code || code.length !== 2) return null
-  const flags = String.fromCodePoint(
-    ...code.split("").map((c) => 0x1F1E6 + c.charCodeAt(0) - 65)
-  )
-  return <span className="text-2xl">{flags}</span>
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
-      <span className="text-sm text-white/50">{label}</span>
-      <span className="text-sm text-white/80 font-medium text-right max-w-[60%] truncate" title={value}>
-        {value || "—"}
-      </span>
-    </div>
-  )
-}
-
-function MetricBox({ label, classNameValue, children }: { label: string; classNameValue?: string; children: React.ReactNode }) {
-  return (
-    <div className="glass rounded-xl p-3 text-center">
-      <p className="text-xs text-white/40 mb-1">{label}</p>
-      <div className={`text-sm font-semibold text-white ${classNameValue ?? ""}`}>{children}</div>
-    </div>
-  )
-}
 
 export function IpInfoWidget() {
   const [query, setQuery] = useState("")
@@ -182,7 +155,7 @@ export function IpInfoWidget() {
                   {data.lat ? `${data.lat.toFixed(2)}, ${data.lon.toFixed(2)}` : "—"}
                 </MetricBox>
                 <MetricBox label="Country Code">{data.countryCode || "—"}</MetricBox>
-                <MetricBox label="Timezone" classNameValue="text-xs">
+                <MetricBox label="Timezone" className="text-xs">
                   {data.timezone || "—"}
                 </MetricBox>
               </div>

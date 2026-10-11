@@ -54,6 +54,8 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <button
+      type="button"
+      aria-label={label}
       onClick={async () => {
         try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch { /* */ }
       }}
@@ -90,6 +92,7 @@ export function ColorToolsWidget() {
           />
         </div>
         <button
+          type="button"
           onClick={() => setHex(randomHex())}
           aria-label="Random color"
           className="glass rounded-lg p-2.5 hover:bg-white/10 transition-colors"
@@ -138,13 +141,18 @@ export function ColorToolsWidget() {
             <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Tinted Palette</h4>
             <div className="flex gap-1 rounded-xl overflow-hidden h-12">
               {palette.map((c) => (
-                <div key={c} className="flex-1 relative group cursor-pointer" style={{ backgroundColor: c }}
+                <button
+                  key={c}
+                  type="button"
+                  aria-label={`Use color ${c}`}
+                  className="flex-1 relative group cursor-pointer"
+                  style={{ backgroundColor: c }}
                   onClick={() => setHex(c)}
                 >
                   <span className="absolute inset-0 flex items-center justify-center text-[9px] font-mono text-white/0 group-hover:text-white/80 transition-colors" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
                     {c}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </CardContent>

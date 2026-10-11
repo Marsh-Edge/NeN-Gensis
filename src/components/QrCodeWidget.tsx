@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Download, QrCode } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,13 @@ export function QrCodeWidget() {
   const [qrUrl, setQrUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const urlRef = useRef("")
+
+  useEffect(() => {
+    return () => {
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current)
+    }
+  }, [])
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault()
@@ -19,6 +26,10 @@ export function QrCodeWidget() {
 
     setLoading(true)
     setError("")
+    if (urlRef.current) {
+      URL.revokeObjectURL(urlRef.current)
+      urlRef.current = ""
+    }
     setQrUrl("")
 
     try {
@@ -35,7 +46,9 @@ export function QrCodeWidget() {
       }
 
       const blob = await res.blob()
-      setQrUrl(URL.createObjectURL(blob))
+      const url = URL.createObjectURL(blob)
+      urlRef.current = url
+      setQrUrl(url)
     } catch {
       setError("Failed to generate QR code")
     } finally {
@@ -58,6 +71,7 @@ export function QrCodeWidget() {
           placeholder="Enter text or URL..."
           value={text}
           onChange={(e) => setText(e.target.value)}
+          aria-label="Text or URL to encode"
           className="flex-1"
         />
         <Button type="submit" disabled={loading || !text.trim()}>
@@ -85,7 +99,10 @@ export function QrCodeWidget() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrUrl}
-              alt="QR Code"
+              alt={text ? `QR code for ${text}` : "Generated QR code"}
+              width={256}
+              height={256}
+              decoding="async"
               className="w-64 h-64"
             />
           </Card>

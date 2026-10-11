@@ -6,36 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Flag as FlagEmoji, InfoRow, MetricBox } from "@/components/widgets/shared"
 import type { CountryData } from "@/lib/types"
-
-function CountryFlag({ iso2 }: { iso2: string }) {
-  if (!iso2 || iso2.length !== 2) return null
-  const flag = String.fromCodePoint(
-    ...iso2.split("").map((c) => 0x1F1E6 + c.charCodeAt(0) - 65)
-  )
-  return <span className="text-4xl">{flag}</span>
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
-      <span className="text-sm text-white/50">{label}</span>
-      <span className="text-sm text-white/80 font-medium text-right" title={value}>
-        {value || "—"}
-      </span>
-    </div>
-  )
-}
-
-function MetricBox({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="glass rounded-xl p-3 text-center">
-      <div className="flex justify-center mb-1.5 text-white/40">{icon}</div>
-      <p className="text-xs text-white/40 mb-1">{label}</p>
-      <p className="text-sm font-semibold text-white truncate">{value}</p>
-    </div>
-  )
-}
 
 export function CountriesWidget() {
   const [query, setQuery] = useState("")
@@ -117,7 +89,7 @@ export function CountriesWidget() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg">
-                  <CountryFlag iso2={data.iso2} />
+                  <FlagEmoji code={data.iso2} className="text-4xl" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">{data.name}</h3>

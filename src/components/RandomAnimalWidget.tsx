@@ -17,6 +17,7 @@ export function RandomAnimalWidget() {
   async function fetchAnimal(t: "cat" | "fox") {
     setLoading(true)
     setError("")
+    setData(null)
     try {
       const res = await fetch("/api/random-animal", {
         method: "POST",
@@ -45,6 +46,7 @@ export function RandomAnimalWidget() {
         <div className="flex rounded-lg overflow-hidden border border-white/10">
           <button
             onClick={() => switchType("cat")}
+            aria-pressed={type === "cat"}
             className={`px-4 py-2 text-sm transition-colors ${type === "cat" ? "bg-white/15 text-white" : "text-white/40 hover:text-white/60"}`}
           >
             <PawPrint className="w-4 h-4 mr-1.5 inline" />
@@ -52,6 +54,7 @@ export function RandomAnimalWidget() {
           </button>
           <button
             onClick={() => switchType("fox")}
+            aria-pressed={type === "fox"}
             className={`px-4 py-2 text-sm transition-colors ${type === "fox" ? "bg-white/15 text-white" : "text-white/40 hover:text-white/60"}`}
           >
             <PawPrint className="w-4 h-4 mr-1.5 inline" />
@@ -74,6 +77,8 @@ export function RandomAnimalWidget() {
             <img
               src={data.imageUrl}
               alt={`Random ${data.type}`}
+              loading="lazy"
+              decoding="async"
               className="w-full max-w-md mx-auto rounded-xl object-cover"
               style={{ maxHeight: "50vh" }}
             />

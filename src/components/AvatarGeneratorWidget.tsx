@@ -33,6 +33,7 @@ export function AvatarGeneratorWidget() {
   async function fetchAvatar(s: string, st: string) {
     setLoading(true)
     setError("")
+    setData(null)
     try {
       const res = await fetch("/api/avatar", {
         method: "POST",
@@ -83,7 +84,9 @@ export function AvatarGeneratorWidget() {
         {STYLES.map((s) => (
           <button
             key={s.id}
+            type="button"
             onClick={() => { setStyle(s.id); if (data || seed) fetchAvatar(seed || "random", s.id) }}
+            aria-pressed={style === s.id}
             className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
               style === s.id ? "bg-white/15 text-white border-white/20" : "text-white/40 border-white/10 hover:text-white/60"
             }`}
@@ -105,6 +108,7 @@ export function AvatarGeneratorWidget() {
               <img
                 src={`data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(data.svg)))}`}
                 alt={`Avatar for ${data.seed}`}
+                decoding="async"
                 className="w-48 h-48 rounded-2xl bg-white/5"
               />
               <div className="flex items-center gap-2">

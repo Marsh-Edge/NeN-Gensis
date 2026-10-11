@@ -7,27 +7,32 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 function generateUuid(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16)
-  })
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  const bytes = new Uint8Array(16)
+  crypto.getRandomValues(bytes)
+  bytes[6] = (bytes[6] & 0x0f) | 0x40
+  bytes[8] = (bytes[8] & 0x3f) | 0x80
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
 }
 
 export function UuidGeneratorWidget() {
-  const [copied, setCopied] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const [count, setCount] = useState(1)
   const [genKey, setGenKey] = useState(0)
 
   function handleGenerate() {
     setGenKey((k) => k + 1)
-    setCopied(false)
+    setCopiedId(null)
   }
 
   async function handleCopy(text: string) {
     try {
       await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopiedId(text)
+      setTimeout(() => setCopiedId((cur) => (cur === text ? null : cur)), 2000)
     } catch { /* ignore */ }
   }
 
@@ -47,6 +52,8 @@ export function UuidGeneratorWidget() {
                 <button
                   key={n}
                   onClick={() => setCount(n)}
+                  aria-pressed={count === n}
+                  aria-label={`Generate ${n} UUID${n > 1 ? "s" : ""}`}
                   className={`text-xs px-2 py-0.5 rounded ${count === n ? "bg-white/15 text-white" : "text-white/40 hover:text-white/70"}`}
                 >
                   {n}
@@ -56,11 +63,17 @@ export function UuidGeneratorWidget() {
           </div>
 
           <div className="space-y-2">
-            {uuids.map((id, i) => (
-              <div key={i} className="glass rounded-lg p-3 flex items-center justify-between gap-3">
+            {uuids.map((id) => (
+              <div key={id} className="glass rounded-lg p-3 flex items-center justify-between gap-3">
                 <code className="text-sm font-mono text-white/80 break-all select-all">{id}</code>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0" onClick={() => handleCopy(id)}>
-                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-white/40" />}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 flex-shrink-0"
+                  onClick={() => handleCopy(id)}
+                  aria-label={copiedId === id ? "Copied" : `Copy UUID ${id}`}
+                >
+                  {copiedId === id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-white/40" />}
                 </Button>
               </div>
             ))}

@@ -6,17 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { MetricBox } from "@/components/widgets/shared"
 import type { GitHubProfileData } from "@/lib/types"
-
-function MetricBox({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="glass rounded-xl p-3 text-center">
-      <div className="flex justify-center mb-1 text-white/40">{icon}</div>
-      <p className="text-xs text-white/40 mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-white">{value}</p>
-    </div>
-  )
-}
 
 export function GitHubProfileWidget() {
   const [query, setQuery] = useState("")
